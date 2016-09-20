@@ -3,10 +3,17 @@
 
 ## Exploratory data analysis
 
-    %let vars=bmi smoking alcohol;
+	%let constant_vars = height;
+    %let dynamic_vars  = bmi n_cigarettes alc_grams;
   
-    proc means data=alldat n nmiss mean median min p1 q1 q3 p99 max std; 
-    	var &vars;
+    proc means nolabels data=alldat n nmiss mean median min p1 q1 q3 p99 max std; 
+    	var &constant_vars;
+    	where period=1;
+    run;
+
+    proc means nolabels data=alldat n nmiss mean median min p1 q1 q3 p99 max std; 
+    	var &dynamic_vars;
+    	class period;
     run;
 
 	proc freq data=alldat;
