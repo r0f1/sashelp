@@ -3,6 +3,8 @@
 
 ## Exploratory data analysis
 
+### Finding out n, distribution and missing values
+
     %let constant_vars = height;
     %let dynamic_vars  = bmi n_cigarettes alc_grams;
   
@@ -26,7 +28,7 @@
 	run;
 
 
-## Grouping of variables with zero occurences
+### Grouping of variables with zero occurences
 
     proc freq data=alldat; 
         tables diagnosis*year*gender*agegroup / noprint out=alldat_grouped;
@@ -45,3 +47,31 @@
     run;
 
 See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
+
+
+## Working with datasets
+
+### Importing a CSV file
+
+    filename myfile '/path/to/data.csv';
+    proc import datafile=myfile out=alldat dbms=dlm replace; 
+        delimiter=";";
+        getnames=yes;
+    run;
+
+Careful if exported from Excel spreadsheet:
+
+* missing values should be missing (not coded as a hyphen)
+* numbers must not have any zero separator (10000 not 10.000)
+
+See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
+
+### Reading/Writing from/to disk
+
+    libname store '/path/to/my/folder';
+
+    * Read from file ;
+    data alldat; set store.alldat; run;
+
+    * Write to file ;
+    data store.alldat; set alldat; run;
