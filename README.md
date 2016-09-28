@@ -18,15 +18,23 @@
     	class period;
     run;
 
+### Cross-Tabulating
+
+    proc freq data=alldat; 
+        tables age height bmi; 
+    run;
 	proc freq data=alldat;
-		tables &vars;
-	run;
+        tables year*(age height bmi);
+    run;
+
+### Missingness Patterns
 
 	proc mi data=alldat nimpute=0;
-		var &vars;
+		var age height bmi; 
 		ods select misspattern;
 	run;
 
+If you want to also display missingness patterns of character variables, look [here](http://www.ats.ucla.edu/stat/sas/faq/nummiss_sas.htm).
 
 ### Grouping of variables with zero occurences
 
@@ -48,8 +56,58 @@
 
 See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
 
-
 ## Working with datasets
+
+### Splitting a dataset
+    
+    data light medium heavy;
+        set alldat;
+        if            weight < 85   then output light;
+        else if 85 <= weight <= 110 then output medium;
+        else if       weight > 110  then output heavy;
+    run;
+
+    data male(where=(sex=1)) female(where=(sex=2));
+        set alldat;
+    run;
+
+See also [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).
+
+## Debugging
+
+### Printing some infos
+
+    * Print dataset infos ;
+    proc contents data=alldat; run;
+
+    * Print some observations ;
+    proc print data=alldat(firstobs=2 obs=5); run;
+    proc print data=alldat; where id=1234; run;
+    proc print data=alldat;
+        var name gender smoking;
+        where bmi > 25;
+    run;
+
+
+### Deleting all labels and formats from a dataset
+
+    proc datasets nolist;
+        modify alldat;
+        attrib _all_ label=''; 
+        attrib _all_ format=;
+        attrib _all_ informat=;
+    run;
+
+### Delete unused libnames and datasets
+    
+    libname oldlib clear;
+
+    proc datasets nolist;
+        delete olddata1 olddata2 olddata3;
+    quit; run;
+
+
+## Import and Export
 
 ### Importing a CSV file
 
@@ -61,8 +119,8 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
 
 Careful if exported from Excel spreadsheet:
 
-* missing values should be missing (not coded as a hyphen)
-* numbers must not have any zero separator (10000 not 10.000)
+* missing values should be missing not coded as a - (hyphen)
+* numbers must not have any zero separator (1000 not 1.000)
 
 See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
 
