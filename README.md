@@ -51,10 +51,18 @@ If you want to also display missingness patterns of character variables, look [h
         class diagnosis year gender agegroup;
         freq count;
         var one;
-        output out=final_grouped(drop=_:_) n=n;
+        output out=final_grouped(drop=_freq_ _type_) n=n;
     run;
 
 See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
+
+### Sum over column by group = "GROUP BY"
+
+    proc summary data=alldat nway completetypes;
+        class county year gender;
+        var n;
+        output out=alldat_g(drop=_freq_ _type_) sum=;
+    run;
 
 ## Working with datasets
 
@@ -111,9 +119,15 @@ See also [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).
 
 ### Importing a CSV file
 
+    * CSV *;
     filename myfile '/path/to/data.csv';
+    proc import datafile=myfile out=alldat dbms=csv replace; 
+        getnames=yes;
+    run;
+
+    * Other separator *;
     proc import datafile=myfile out=alldat dbms=dlm replace; 
-        delimiter=";";
+        delimiter="|";
         getnames=yes;
     run;
 
