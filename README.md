@@ -66,7 +66,13 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
 
 ## Working with datasets
 
-### Splitting a dataset
+### Filter a dataset
+
+    data male;
+        set alldat(where=(set=1));
+    run;
+
+### Split a dataset
     
     data light medium heavy;
         set alldat;
@@ -79,7 +85,8 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
         set alldat;
     run;
 
-See also [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).
+See also [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).  
+[Difference between IF and WHERE](http://www2.sas.com/proceedings/sugi31/238-31.pdf).
 
 ## Debugging
 
