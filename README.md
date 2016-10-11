@@ -46,7 +46,7 @@ A|Frequency|Percent|Cumulative Frequency|Cumulative Percent
 
 A|Frequency|Percent|Cumulative Frequency|Cumulative Percent
 ---|---|---|---|---
-.|2|33.33|.|33.33
+.|2|33.33|2|33.33
 1|2|33.33|2|66.67
 2|2|33.33|4|100.00
 
