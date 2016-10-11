@@ -101,11 +101,12 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
 
 ### Split a dataset
 
-    data light medium heavy;
+    data noinfo light medium heavy;
         set alldat;
-        if            weight < 85   then output light;
-        else if 85 <= weight <= 110 then output medium;
-        else if       weight > 110  then output heavy;
+        if      weight <= 0   then output noinfo;
+        else if weight <= 85  then output light;
+        else if weight <= 110 then output medium;
+        else                       output heavy;
     run;
 
     data male(where=(sex=1)) female(where=(sex=2));
@@ -181,3 +182,18 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
 
     * Write to file ;
     data store.alldat; set alldat; run;
+
+## Traps and Pitfalls
+
+### Categorizing variables that have missing values
+    
+    data alldat;
+        *...;
+        * BMI (.=missing/1=normal/2=overweight/3=obese);
+        if      bmi<=0  then bmicat=.;
+        else if bmi<25  then bmicat=1; 
+        else if bmi<30  then bmicat=2;
+        else                 bmicat=3;
+    run;
+
+Missing values in SAS are less than zero! [SAS Documentation](https://support.sas.com/documentation/cdl/en/lrcon/62955/HTML/default/viewer.htm#a000989180.htm)
