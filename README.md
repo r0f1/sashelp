@@ -7,30 +7,57 @@
 
     %let constant_vars = height;
     %let dynamic_vars  = bmi n_cigarettes alc_grams;
-  
-    proc means nolabels data=alldat n nmiss mean median min p1 q1 q3 p99 max std; 
+
+    proc means nolabels data=alldat n nmiss mean median min p1 q1 q3 p99 max std;
     	var &constant_vars;
     	where period=1;
+        class exposure;
     run;
 
-    proc means nolabels data=alldat n nmiss mean median min p1 q1 q3 p99 max std; 
+    proc means nolabels data=alldat n nmiss mean median min p1 q1 q3 p99 max std;
     	var &dynamic_vars;
-    	class period;
+    	class period exposure;
     run;
 
 ### Cross-Tabulating
 
-    proc freq data=alldat; 
-        tables age height bmi; 
+    proc freq data=alldat;
+        tables age height bmi;
     run;
 	proc freq data=alldat;
         tables year*(age height bmi);
     run;
+    proc freq data=alldat;
+        tables A / missprint;
+    run;
+    proc freq data=alldat;
+        tables A / missing;
+    run;
+
+**Missprint** produces:
+
+A|Frequency|Percent|Cumulative Frequency|Cumulative Percent
+---|---|---|---|---
+.|2|.|.|.
+1|2|50.00|2|50.00
+2|2|50.00|4|100.00
+
+**Missing** produces:
+
+A|Frequency|Percent|Cumulative Frequency|Cumulative Percent
+---|---|---|---|---
+.|2|33.33|.|33.33
+1|2|33.33|2|66.67
+2|2|33.33|4|100.00
+
+
+[Missprint/Missing in SAS documentation](https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_freq_sect016.htm)
+
 
 ### Missingness Patterns
 
 	proc mi data=alldat nimpute=0;
-		var age height bmi; 
+		var age height bmi;
 		ods select misspattern;
 	run;
 
@@ -38,7 +65,7 @@ If you want to also display missingness patterns of character variables, look [h
 
 ### Grouping of variables with zero occurences
 
-    proc freq data=alldat; 
+    proc freq data=alldat;
         tables diagnosis*year*gender*agegroup / noprint out=alldat_grouped;
     run;
 
@@ -69,11 +96,11 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
 ### Filter a dataset
 
     data male;
-        set alldat(where=(set=1));
+        set alldat(where=(sex=1));
     run;
 
 ### Split a dataset
-    
+
     data light medium heavy;
         set alldat;
         if            weight < 85   then output light;
@@ -108,13 +135,13 @@ See also [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).
 
     proc datasets nolist;
         modify alldat;
-        attrib _all_ label=''; 
+        attrib _all_ label='';
         attrib _all_ format=;
         attrib _all_ informat=;
     run;
 
 ### Delete unused libnames and datasets
-    
+
     libname oldlib clear;
 
     proc datasets nolist;
@@ -128,12 +155,12 @@ See also [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).
 
     * CSV *;
     filename myfile '/path/to/data.csv';
-    proc import datafile=myfile out=alldat dbms=csv replace; 
+    proc import datafile=myfile out=alldat dbms=csv replace;
         getnames=yes;
     run;
 
     * Other separator *;
-    proc import datafile=myfile out=alldat dbms=dlm replace; 
+    proc import datafile=myfile out=alldat dbms=dlm replace;
         delimiter="|";
         getnames=yes;
     run;
