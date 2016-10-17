@@ -208,15 +208,16 @@ Missing values in SAS are less than zero! [SAS doc](https://support.sas.com/docu
 
 ### Sum and plus sign behave differently
 
-`sum()' and other built-in functions like `avg()' ignore missing values. [SAS doc](http://support.sas.com/documentation/cdl/en/lrdict/64316/HTML/default/viewer.htm#a000245953.htm), [pdf](http://www.lexjansen.com/nesug/nesug06/cc/cc31.pdf)
+`sum()` and other built-in functions like `avg()` ignore missing values. [SAS doc](http://support.sas.com/documentation/cdl/en/lrdict/64316/HTML/default/viewer.htm#a000245953.htm), [pdf](http://www.lexjansen.com/nesug/nesug06/cc/cc31.pdf)
 
     x1=4
     x2=9
     x3=.
+
     sum(x1,x2)     yields 13
     sum(x1,x2,x3)  yields 13
     sum(of x1-x3)  yields 13
     sum(of x:)     yields 13
-    sum(x1-x2)     yields -5 # forgot 'of' --> subtraction
+    sum(x1-x2)     yields -5   # forgot 'of' --> subtraction
     x1+x2          yields 13
     x1+x2+x3       yields .
