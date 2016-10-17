@@ -8,20 +8,20 @@
     %let constant_vars = height;
     %let dynamic_vars  = bmi n_cigarettes alc_grams;
 
-    proc means nolabels data=alldat n nmiss mean median min p1 q1 q3 p99 max std;
+    proc means nolabels data=alldat n nmiss mean median min p1 q1 q3 p95 p99 max std;
     	var &constant_vars;
     	where period=1;
         class exposure;
     run;
 
-    proc means nolabels data=alldat n nmiss mean median min p1 q1 q3 p99 max std;
+    proc means nolabels data=alldat n nmiss mean median min p1 p5 q1 q3 p95 p99 max std;
     	var &dynamic_vars;
     	class period exposure;
     run;
 
 ### Cross-Tabulating
 
-    proc freq data=alldat;
+    proc freq data=alldat; 
         tables age height bmi;
     run;
 	proc freq data=alldat;
@@ -183,12 +183,21 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
     * Write to file ;
     data store.alldat; set alldat; run;
 
+### Writing results to an output file instead of log
+
+    proc printto print='path/to/my/file.sasoutput' new; run;
+
+    * call proc freq, proc means, etc.;
+
+    proc printto run;
+
 ## Traps and Pitfalls
 
 ### Categorizing variables that have missing values
+
+Missing values in SAS are less than zero! [SAS doc](https://support.sas.com/documentation/cdl/en/lrcon/62955/HTML/default/viewer.htm#a000989180.htm)
     
     data alldat;
-        *...;
         * BMI (.=missing/1=normal/2=overweight/3=obese);
         if      bmi<=0  then bmicat=.;
         else if bmi<25  then bmicat=1; 
@@ -196,4 +205,18 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
         else                 bmicat=3;
     run;
 
-Missing values in SAS are less than zero! [SAS Documentation](https://support.sas.com/documentation/cdl/en/lrcon/62955/HTML/default/viewer.htm#a000989180.htm)
+
+### Sum and plus sign behave differently
+
+`sum()' and other built-in functions like `avg()' ignore missing values. [SAS doc](http://support.sas.com/documentation/cdl/en/lrdict/64316/HTML/default/viewer.htm#a000245953.htm), [pdf](http://www.lexjansen.com/nesug/nesug06/cc/cc31.pdf)
+
+    x1=4
+    x2=9
+    x3=.
+    sum(x1,x2)     yields 13
+    sum(x1,x2,x3)  yields 13
+    sum(of x1-x3)  yields 13
+    sum(of x:)     yields 13
+    sum(x1-x2)     yields -5 # forgot 'of' --> subtraction
+    x1+x2          yields 13
+    x1+x2+x3       yields .
