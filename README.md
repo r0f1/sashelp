@@ -8,13 +8,13 @@
     %let constant_vars = height;
     %let dynamic_vars  = bmi n_cigarettes alc_grams;
 
-    proc means nolabels data=alldat n nmiss mean median min p1 q1 q3 p95 p99 max std;
+    proc means data=alldat nolabels missing n nmiss mean median min p1 p5 q1 q3 p95 p99 max std;
     	var &constant_vars;
     	where period=1;
         class exposure;
     run;
 
-    proc means nolabels data=alldat n nmiss mean median min p1 p5 q1 q3 p95 p99 max std;
+    proc means data=alldat nolabels missing n nmiss mean median min p1 p5 q1 q3 p95 p99 max std;
     	var &dynamic_vars;
     	class period exposure;
     run;
