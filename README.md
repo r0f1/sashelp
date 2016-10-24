@@ -146,23 +146,36 @@ See also [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).
 
 ## Arrays
 
-    array months  {*} jan feb jul oct nov;
-    
-    array arrayname {n} [$] [length] list_of_array_elements;
+### Creating and iterating 
 
-    where
-        array is a SAS keyword that specifies that an array is being defined
-        arrayname a valid SAS name that is not a variable name in the data set.
-        {n} the index used to give the number of elements in the array, optional
-        [$] used to specify if the elements in the array are character variables, the default
-            type is numeric
-        [length] used to define the length of new variables being created in the array, optional
-        list_of_array_elements a list of variables of the same type (all numeric or all character) to be included in
-            the array
+	*Functions*;
+    array incomea  {*} income08 income09 income10 income11 income12;
+
+    sum_income  = sum(of incomea);
+    mean_income = mean(of incomea);
+    min_income  = min(of incomea);
+    max_income  = max(of incomea);
 
 
-[More Examples -> SAS Doc](http://support.sas.com/documentation/cdl/en/lestmtsref/68024/HTML/default/viewer.htm#p08do6szetrxe2n136ush727sbuo.htm), [More Arrays + Loops over arrays](http://support.sas.com/resources/papers/proceedings10/158-2010.pdf)
+	*Looping*;
+    array wtkga   {5} wtkg1-wtkg5;
+    array heighta {5} htm1-htm5;
+    array bmia    {5} bmi1-bmi5; /*derived*/
 
+    do i=1 to dim(bmia);
+        bmia(i)=wtkga(i)/(heighta(i)**2);
+    end;
+
+
+    *Initial values*;
+	array sizesa {*} petite small medium large extra_large (2, 4, 6, 8, 10); 
+	array citiesa {*} $ ('New York' 'Los Angeles' 'Dallas' 'Chicago'); 
+
+
+
++ [More Examples -> SAS Doc](http://support.sas.com/documentation/cdl/en/lestmtsref/68024/HTML/default/viewer.htm#p08do6szetrxe2n136ush727sbuo.htm)
++ [More Array Definitions + Loops over arrays](http://support.sas.com/resources/papers/proceedings10/158-2010.pdf)
++ [Functions on Arrays](https://support.sas.com/resources/papers/97529_Using_Arrays_in_SAS_Programming.pdf)
 
 ## Import and Export
 
