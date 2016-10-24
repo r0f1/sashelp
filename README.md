@@ -5,19 +5,14 @@
 
 ### Finding out n, distribution and missing values
 
-    %let constant_vars = height;
-    %let dynamic_vars  = bmi n_cigarettes alc_grams;
+    %let vars  = bmi n_cigarettes alc_grams;
 
     proc means data=alldat nolabels missing n nmiss mean median min p1 p5 q1 q3 p95 p99 max std;
-    	var &constant_vars;
-    	where period=1;
-        class exposure;
+    	var &vars;
+        class period exposure;
     run;
 
-    proc means data=alldat nolabels missing n nmiss mean median min p1 p5 q1 q3 p95 p99 max std;
-    	var &dynamic_vars;
-    	class period exposure;
-    run;
+[proc means arguments](http://www2.sas.com/proceedings/sugi29/240-29.pdf)
 
 ### Cross-Tabulating
 
@@ -47,11 +42,11 @@ A|Frequency|Percent|Cumulative Frequency|Cumulative Percent
 A|Frequency|Percent|Cumulative Frequency|Cumulative Percent
 ---|---|---|---|---
 .|2|33.33|2|33.33
-1|2|33.33|2|66.67
-2|2|33.33|4|100.00
+1|2|33.33|4|66.67
+2|2|33.33|6|100.00
 
 
-[Missprint/Missing in SAS documentation](https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_freq_sect016.htm)
+[SAS doc](https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_freq_sect016.htm)
 
 
 ### Missingness Patterns
