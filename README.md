@@ -8,7 +8,7 @@
     %let vars  = bmi n_cigarettes alc_grams;
 
     proc means data=alldat nolabels missing n nmiss mean median min p1 p5 q1 q3 p95 p99 max std;
-    	var &vars;
+        var &vars;
         class period exposure;
     run;
 
@@ -19,7 +19,7 @@
     proc freq data=alldat; 
         tables age height bmi;
     run;
-	proc freq data=alldat;
+    proc freq data=alldat;
         tables year*(age height bmi);
     run;
     proc freq data=alldat;
@@ -51,10 +51,10 @@ A|Frequency|Percent|Cumulative Frequency|Cumulative Percent
 
 ### Missingness Patterns
 
-	proc mi data=alldat nimpute=0;
-		var age height bmi;
-		ods select misspattern;
-	run;
+    proc mi data=alldat nimpute=0;
+        var age height bmi;
+        ods select misspattern;
+    run;
 
 If you want to also display missingness patterns of character variables, look [here](http://www.ats.ucla.edu/stat/sas/faq/nummiss_sas.htm).
 
@@ -143,6 +143,25 @@ See also [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).
     proc datasets nolist;
         delete olddata1 olddata2 olddata3;
     quit; run;
+
+## Arrays
+
+    array months  {*} jan feb jul oct nov;
+    
+    array arrayname {n} [$] [length] list_of_array_elements;
+
+    where
+        array is a SAS keyword that specifies that an array is being defined
+        arrayname a valid SAS name that is not a variable name in the data set.
+        {n} the index used to give the number of elements in the array, optional
+        [$] used to specify if the elements in the array are character variables, the default
+            type is numeric
+        [length] used to define the length of new variables being created in the array, optional
+        list_of_array_elements a list of variables of the same type (all numeric or all character) to be included in
+            the array
+
+
+[More Examples -> SAS Doc](http://support.sas.com/documentation/cdl/en/lestmtsref/68024/HTML/default/viewer.htm#p08do6szetrxe2n136ush727sbuo.htm), [More Arrays + Loops over arrays](http://support.sas.com/resources/papers/proceedings10/158-2010.pdf)
 
 
 ## Import and Export
