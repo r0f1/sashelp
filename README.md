@@ -146,6 +146,8 @@ See also [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).
 
 ## Arrays
 
+Arrays in the SAS language are different from arrays in many other languages. A SAS array is simply a convenient way of temporarily identifying a group of variables. It is not a data structure, and the array name is not a variable.
+
 ### Creating and iterating 
 
 	*Functions*;
@@ -176,6 +178,7 @@ See also [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).
 + [More Examples -> SAS Doc](http://support.sas.com/documentation/cdl/en/lestmtsref/68024/HTML/default/viewer.htm#p08do6szetrxe2n136ush727sbuo.htm)
 + [More Array Definitions + Loops over arrays](http://support.sas.com/resources/papers/proceedings10/158-2010.pdf)
 + [Functions on Arrays](https://support.sas.com/resources/papers/97529_Using_Arrays_in_SAS_Programming.pdf)
++ [Some more array features](http://www.lexjansen.com/nesug/nesug05/pm/pm8.pdf)
 
 ## Import and Export
 
@@ -205,10 +208,14 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
     libname store '/path/to/my/folder';
 
     * Read from file ;
-    data alldat; set store.alldat; run;
+    data alldat;
+        set store.alldat;
+    run;
 
     * Write to file ;
-    data store.alldat; set alldat; run;
+    data store.alldat;
+        set alldat;
+    run;
 
 ### Writing results to an output file instead of log
 
