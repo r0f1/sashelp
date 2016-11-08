@@ -174,11 +174,15 @@ Arrays in the SAS language are different from arrays in many other languages. A 
 	array citiesa {*} $ ('New York' 'Los Angeles' 'Dallas' 'Chicago'); 
 
 
+    * Defining your own subscript range*;
+    array tempa {6:18} temp6 – temp18;
+
 
 + [More Examples -> SAS Doc](http://support.sas.com/documentation/cdl/en/lestmtsref/68024/HTML/default/viewer.htm#p08do6szetrxe2n136ush727sbuo.htm)
 + [More Array Definitions + Loops over arrays](http://support.sas.com/resources/papers/proceedings10/158-2010.pdf)
 + [Functions on Arrays](https://support.sas.com/resources/papers/97529_Using_Arrays_in_SAS_Programming.pdf)
-+ [Some more array features](http://www.lexjansen.com/nesug/nesug05/pm/pm8.pdf)
++ [Two dimensional and temporary arrays](http://www.lexjansen.com/nesug/nesug05/pm/pm8.pdf)
++ [Defining your own subscript range](http://www2.sas.com/proceedings/sugi30/242-30.pdf)
 
 ## Import and Export
 
