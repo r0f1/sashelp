@@ -114,7 +114,7 @@ See also [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).
 
 ### Creating quartiles
 
-    proc rank data=alldat groups=4;
+    proc rank data=alldat out=alldat groups=4;
         var bmi;
         ranks bmi_q;
     run;
