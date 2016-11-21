@@ -7,7 +7,7 @@
 
     %let vars  = bmi n_cigarettes alc_grams;
 
-    proc means data=alldat nolabels missing n nmiss mean median min p1 p5 q1 q3 p95 p99 max std;
+    proc means data=alldat nolabels missing n nmiss mean median min max p1 p5 q1 q3 p95 p99 std;
         var &vars;
         class period exposure;
     run;
@@ -110,6 +110,15 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
 
 See also [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).  
 [Difference between IF and WHERE](http://www2.sas.com/proceedings/sugi31/238-31.pdf).
+
+
+### Creating quartiles
+
+    proc rank data=alldat groups=4;
+        var bmi;
+        ranks bmi_q;
+    run;
+
 
 ## Debugging
 
@@ -259,3 +268,36 @@ Missing values in SAS are less than zero! [SAS doc](https://support.sas.com/docu
     sum(x1-x2)     yields -5   # forgot 'of' --> subtraction
     x1+x2          yields 13
     x1+x2+x3       yields .
+
+
+## Find the bug
+
+### Array conversions
+
+    data alldat;
+    
+        * duration of medication use, months: missing is coded as 999*;
+        array durmeda          {*} durmed76 durmed78 durmed80 
+
+        * duration of medication use, months (derived): missing will be coded as . *;
+        * and values will be caried forward from 1980 onwards*;
+        array durmedua         {*} durmedu76 durmedu78 durmedu80 durmedu84 durmedu86 durmedu88;
+
+        do i=1 to dim(durmedua);
+            if i<=3 then do;
+                if durmeda(i)=999 then 
+                    durmedua(i)=.;
+                else
+                    durmedua(i)=durmeda(i);
+            end;
+            else    durmedua(i)=durmeda(5);
+
+            durmed=durmedua(i);
+        end;
+
+    run;
+
+
+A proc freq of `durmed` reveals that there are some missing values and some values are still 999.
+I thought I have overwritten all 999 values. How is this possible?
+
