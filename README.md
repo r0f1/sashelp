@@ -202,9 +202,8 @@ Arrays in the SAS language are different from arrays in many other languages. A 
 
 ## Misc
 
-
 <details>
-<summary>Super specific stuff (click to expand)</summary>
+<summary>Grouping of variables, summing over column by group, importing CSV files (click to expand)</summary>
 
 ### Grouping of variables with zero occurences
 
