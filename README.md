@@ -260,9 +260,9 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
 
 ## Traps and Pitfalls
 
-### Categorizing variables that have missing values
+### Missing values are less than zero
 
-Missing values in SAS are less than zero! [SAS doc](https://support.sas.com/documentation/cdl/en/lrcon/62955/HTML/default/viewer.htm#a000989180.htm)
+Missing values in SAS are less than zero! Also, there is more than one missing value is SAS. [SAS doc](https://support.sas.com/documentation/cdl/en/lrcon/62955/HTML/default/viewer.htm#a000989180.htm)
     
     data alldat;
         * BMI (.=missing/1=normal/2=overweight/3=obese);
@@ -273,7 +273,7 @@ Missing values in SAS are less than zero! [SAS doc](https://support.sas.com/docu
     run;
 
 
-### Sum and plus sign behave differently
+### Built-in functions ignore missing values
 
 `sum()` and other built-in functions like `avg()` ignore missing values. [SAS doc](http://support.sas.com/documentation/cdl/en/lrdict/64316/HTML/default/viewer.htm#a000245953.htm), [pdf](http://www.lexjansen.com/nesug/nesug06/cc/cc31.pdf)
 
