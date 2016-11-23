@@ -156,12 +156,14 @@ Arrays in the SAS language are different from arrays in many other languages. A 
     * Defining your own subscript range*;
     array tempa {6:18} temp6 – temp18;
 
-
+<details>
+<summary>Sources and more material (click to expand)</summary>
 + [More Examples -> SAS Doc](http://support.sas.com/documentation/cdl/en/lestmtsref/68024/HTML/default/viewer.htm#p08do6szetrxe2n136ush727sbuo.htm)
 + [More Array Definitions + Loops over arrays](http://support.sas.com/resources/papers/proceedings10/158-2010.pdf)
 + [Functions on Arrays](https://support.sas.com/resources/papers/97529_Using_Arrays_in_SAS_Programming.pdf)
 + [Two dimensional and temporary arrays](http://www.lexjansen.com/nesug/nesug05/pm/pm8.pdf)
 + [Defining your own subscript range](http://www2.sas.com/proceedings/sugi30/242-30.pdf)
+</details>
 
 ## Dataset maintainance
 
@@ -199,6 +201,10 @@ Arrays in the SAS language are different from arrays in many other languages. A 
 
 
 ## Misc
+
+
+<details>
+<summary>Super specific stuff (click to expand)</summary>
 
 ### Grouping of variables with zero occurences
 
@@ -250,6 +256,7 @@ Careful if exported from Excel spreadsheet:
 
 See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
 
+</details>
 
 ## Traps and Pitfalls
 
@@ -285,6 +292,8 @@ Missing values in SAS are less than zero! [SAS doc](https://support.sas.com/docu
 
 ## Find the bug
 
+<details><summary>Filling up arrays (click to expand)</summary>
+
 ### Filling up arrays
 
     data alldat;
@@ -314,3 +323,4 @@ Missing values in SAS are less than zero! [SAS doc](https://support.sas.com/docu
 A proc freq of `durmed` reveals that there are some missing values and some values are still 999.
 I thought I have overwritten all 999 values. How is it possible that there are still some 999 values?
 
+</details>
