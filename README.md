@@ -203,8 +203,7 @@ Arrays in the SAS language are different from arrays in many other languages. A 
 ## Misc
 
 <details>
-<summary>Grouping of variables, summing over column by group, importing CSV files (click to expand)</summary>
-
+<summary>Grouping of variables with zero occurences (click to expand)</summary>
 ### Grouping of variables with zero occurences
 
     proc freq data=alldat;
@@ -224,7 +223,9 @@ Arrays in the SAS language are different from arrays in many other languages. A 
     run;
 
 See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
-
+</details>
+<details>
+<summary>Sum over column by group = "GROUP BY" (click to expand)</summary>
 ### Sum over column by group = "GROUP BY"
 
     proc summary data=alldat nway completetypes;
@@ -232,7 +233,9 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
         var n;
         output out=alldat_g(drop=_freq_ _type_) sum=;
     run;
-
+</details>
+<details>
+<summary>Importing a CSV file (click to expand)</summary>
 
 ### Importing a CSV file
 
@@ -254,7 +257,6 @@ Careful if exported from Excel spreadsheet:
 * numbers must not have any zero separator (1000 not 1.000)
 
 See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
-
 </details>
 
 ## Traps and Pitfalls
