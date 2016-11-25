@@ -313,7 +313,7 @@ Missing values in SAS are less than zero! Also, there is more than one missing v
                 else
                     durmedua(i)=durmeda(i);
             end;
-            else    durmedua(i)=durmeda(5);
+            else    durmedua(i)=durmeda(3);
 
             durmed=durmedua(i);
         end;
