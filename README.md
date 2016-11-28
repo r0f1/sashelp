@@ -301,7 +301,7 @@ Missing values in SAS are less than zero! Also, there is more than one missing v
     data alldat;
     
         * duration of medication use, months: missing is coded as 999*;
-        array durmeda          {*} durmed76 durmed78 durmed80 
+        array durmeda          {*} durmed76 durmed78 durmed80;
 
         * duration of medication use, months (derived): missing will be coded as . *;
         * and values will be caried forward from 1980 onwards*;
@@ -314,7 +314,7 @@ Missing values in SAS are less than zero! Also, there is more than one missing v
                 else
                     durmedua(i)=durmeda(i);
             end;
-            else    durmedua(i)=durmeda(5);
+            else    durmedua(i)=durmeda(3);
 
             durmed=durmedua(i);
         end;
