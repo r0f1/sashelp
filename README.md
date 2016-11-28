@@ -86,29 +86,32 @@ If you want to also display missingness patterns of character variables, look [h
     run;
 
 <details>
-<summary>obs and firstobs</summary>
+<summary>obs= and firstobs= explaination (click to expand)</summary>
 FIRSTOBS= option tells SAS to begin reading the data from the input SAS data set at the line number specified by FIRSTOBS.  
 OBS= option tells SAS to stop reading the data from the input SAS data set at the line number specified by OBS.  
 [Source](https://onlinecourses.science.psu.edu/stat481/node/14)
 </details>
 
 <details>
-<summary>Print variables in alphabetical order</summary>
+<summary>Print variables in alphabetical order (click to expand)</summary>
 
 ### Print variables in alphabetical order
 
     proc sql noprint;                               
-        select distinct name                         
-        into : varlist separated by ' '              
+        select distinct name into :varlist separated by ','              
         from dictionary.columns                      
-        where libname='work' and memname='alldat';     
-    quit;     
+        where libname='work' and memname='alldat'
+        order by name;
 
-    proc print data=alldat;
+        create table toprint as 
+            select &varlist from alldat;
+    quit; run;
+
+    proc print data=toprint;
         var &varlist;
     run;
 
-[Source](https://support.sas.com/kb/24/696.html)
+[Source](http://www.amadeus.co.uk/sas-training/tips/1/1/139/sorting-variable-names-alphabetically.php)
 
 </details>
 
