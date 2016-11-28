@@ -7,6 +7,9 @@
 
     %let vars  = bmi n_cigarettes alc_grams;
 
+    proc contents data=alldat;
+    run;
+
     proc means data=alldat nolabels missing n nmiss mean median min max p1 p5 q1 q3 p95 p99 std;
         var &vars;
         class period exposure;
@@ -65,16 +68,14 @@ If you want to also display missingness patterns of character variables, look [h
 
 ### Printing some infos
 
-    * Print dataset infos ;
-    proc contents data=alldat;
-    run;
-
     * Print some observations ;
     proc print data=alldat(firstobs=2 obs=5);
     run;
+
     proc print data=alldat;
         where id=1234; 
     run;
+
     proc print data=alldat;
         var name gender smoking;
         where bmi > 25;
