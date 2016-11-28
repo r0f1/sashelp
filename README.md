@@ -68,8 +68,12 @@ If you want to also display missingness patterns of character variables, look [h
 
 ### Printing some infos
 
-    * Print some observations ;
-    proc print data=alldat(firstobs=2 obs=5);
+    * Print the first 20 observations ;
+    proc print data=alldat(obs=20);
+    run;
+
+    * Print the observations 50 through 70 ;
+    proc print data=alldat(firstobs=50 obs=70);
     run;
 
     proc print data=alldat;
@@ -80,6 +84,33 @@ If you want to also display missingness patterns of character variables, look [h
         var name gender smoking;
         where bmi > 25;
     run;
+
+<details>
+<summary>obs and firstobs</summary>
+FIRSTOBS= option tells SAS to begin reading the data from the input SAS data set at the line number specified by FIRSTOBS.  
+OBS= option tells SAS to stop reading the data from the input SAS data set at the line number specified by OBS.  
+[Source](https://onlinecourses.science.psu.edu/stat481/node/14)
+</details>
+
+<details>
+<summary>Print variables in alphabetical order</summary>
+
+### Print variables in alphabetical order
+
+    proc sql noprint;                               
+        select distinct name                         
+        into : varlist separated by ' '              
+        from dictionary.columns                      
+        where libname='work' and memname='alldat';     
+    quit;     
+
+    proc print data=alldat;
+        var &varlist;
+    run;
+
+[Source](https://support.sas.com/kb/24/696.html)
+
+</details>
 
 ### Writing results to an separate output file instead of the log
 
@@ -105,6 +136,11 @@ If you want to also display missingness patterns of character variables, look [h
         else if weight <= 85  then output light;
         else if weight <= 110 then output medium;
         else                       output heavy;
+    run;
+
+    *Create data set with observations 100 through 200*;
+    data reduced;
+        set alldat(firstobs=100 obs=200);
     run;
 
 <details>
