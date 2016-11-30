@@ -15,21 +15,12 @@
         class period exposure;
     run;
 
-[proc means arguments](http://www2.sas.com/proceedings/sugi29/240-29.pdf)
+[Source](http://www2.sas.com/proceedings/sugi29/240-29.pdf)
 
 ### Cross-Tabulating
 
-    proc freq data=alldat; 
-        tables age height bmi;
-    run;
     proc freq data=alldat;
-        tables year*(age height bmi);
-    run;
-    proc freq data=alldat;
-        tables A / missprint;
-    run;
-    proc freq data=alldat;
-        tables A / missing;
+        tables (age height bmi)*year / missing;
     run;
 
 <details>
@@ -49,9 +40,10 @@ A|Frequency|Percent|Cumulative Frequency|Cumulative Percent
 .|2|33.33|2|33.33
 1|2|33.33|4|66.67
 2|2|33.33|6|100.00
-</details>
 
-[SAS doc](https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_freq_sect016.htm)
+[Source](https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_freq_sect016.htm)
+
+</details>
 
 
 ### Missingness Patterns
@@ -61,8 +53,7 @@ A|Frequency|Percent|Cumulative Frequency|Cumulative Percent
         ods select misspattern;
     run;
 
-If you want to also display missingness patterns of character variables, look [here](http://www.ats.ucla.edu/stat/sas/faq/nummiss_sas.htm).
-
+Missingness patterns of character variables: [here](http://www.ats.ucla.edu/stat/sas/faq/nummiss_sas.htm).
 
 ## Investigating interesting observations
 
@@ -149,11 +140,11 @@ OBS= option tells SAS to stop reading the data from the input SAS data set at th
 <details>
 <summary>Output statement description (click to expand)</summary>
 The OUTPUT statement tells SAS to write the current observation to a SAS data set immediately, not at the end of the DATA step. If no data set name is specified in the OUTPUT statement, the observation is written all that are listed in the DATA statement. By default, every DATA step contains an implicit OUTPUT statement at the end of each iteration that tells SAS to write observations to the data set or data sets that are being created. Placing an explicit OUTPUT statement in a DATA step overrides the automatic output, and SAS adds an observation to a data set only when an explicit OUTPUT statement is executed. Once you use an OUTPUT statement to write an observation to any one data set, however, there is no implicit OUTPUT statement at the end of the DATA step. In this situation, a DATA step writes an observation to a data set only when an explicit OUTPUT executes. You can use the OUTPUT statement alone or as part of an IF-THEN or SELECT statement or in DO-loop processing. [Source](https://v8doc.sas.com/sashtml/lgref/z0194540.htm)
-</details>
 
 More examples [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).  
-[Difference between IF and WHERE](http://www2.sas.com/proceedings/sugi31/238-31.pdf).
+</details>
 
+[IF and WHERE](http://www2.sas.com/proceedings/sugi31/238-31.pdf).
 
 ### Creating quartiles
 
