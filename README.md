@@ -292,9 +292,17 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
 
 ## Traps and Pitfalls
 
-### Missing values are less than zero
+### Always initialize variables
 
-Missing values in SAS are less than zero! Also, there is more than one missing value is SAS. [SAS doc](https://support.sas.com/documentation/cdl/en/lrcon/62955/HTML/default/viewer.htm#a000989180.htm)
+    data alldat;
+        agecat=.; * <-- this statement is important *;
+        if      0<=age<10 then agecat=1;
+        else if    age<20 then agecat=2;
+    run;
+
+SAS will put *NOTE: Variable ... is uninitialized* into the log otherwise. Never ignore this note.
+
+### Missing values are less than zero
     
     data alldat;
         * BMI (.=missing/1=normal/2=overweight/3=obese);
@@ -304,22 +312,23 @@ Missing values in SAS are less than zero! Also, there is more than one missing v
         else                 bmicat=3;
     run;
 
+[More on missing values](https://support.sas.com/documentation/cdl/en/lrcon/62955/HTML/default/viewer.htm#a000989180.htm)
 
 ### Built-in functions ignore missing values
 
-`sum()` and other built-in functions like `avg()` ignore missing values. [SAS doc](http://support.sas.com/documentation/cdl/en/lrdict/64316/HTML/default/viewer.htm#a000245953.htm), [pdf](http://www.lexjansen.com/nesug/nesug06/cc/cc31.pdf)
+For example, `sum()` and `avg()` ignore missing values. [SAS doc](http://support.sas.com/documentation/cdl/en/lrdict/64316/HTML/default/viewer.htm#a000245953.htm), [pdf](http://www.lexjansen.com/nesug/nesug06/cc/cc31.pdf)
 
     x1=4
     x2=9
     x3=.
 
-    sum(x1,x2)     yields 13
-    sum(x1,x2,x3)  yields 13
-    sum(of x1-x3)  yields 13
-    sum(of x:)     yields 13
-    sum(x1-x2)     yields -5   # forgot 'of' --> subtraction
-    x1+x2          yields 13
-    x1+x2+x3       yields .
+    sum(x1,x2)     yields 13   # ok
+    sum(x1,x2,x3)  yields 13   # missings are not considered
+    sum(of x1-x3)  yields 13   # pass a list
+    sum(of x:)     yields 13   # pass variables by common prefix
+    sum(x1-x2)     yields -5   # error: forgot 'of' --> subtraction
+    x1+x2          yields 13   # ok
+    x1+x2+x3       yields .    # missings are considered
 
 
 ## Find the bug
