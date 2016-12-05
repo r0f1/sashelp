@@ -10,6 +10,11 @@
     proc contents data=alldat;
     run;
 
+    proc means data=alldat maxdec=1 nolabels missing n nmiss mean std;
+        var age;
+        class exposure;
+    run;
+
     proc means data=alldat nolabels missing n nmiss mean median min max p1 p5 q1 q3 p95 p99 std;
         var &vars;
         class period exposure;
@@ -329,6 +334,23 @@ For example, `sum()` and `avg()` ignore missing values. [SAS doc](http://support
     sum(x1-x2)     yields -5   # error: forgot 'of' --> subtraction
     x1+x2          yields 13   # ok
     x1+x2+x3       yields .    # missings are considered
+
+
+### Array variables do not have to exists necessarily
+
+    data alldat;
+        merge data90 data91 data92; by id;
+
+        array bmia {*} bmi90 bmi91 bmi92;
+
+        do i=1 to dim(bmia);
+            bmi=bmia(i);
+            ...
+            output;
+        end;
+    run;
+
+If the variables `bmi90`, `bmi91`, `bmi92` do not exist in the data sets `data90 data91 data92`, SAS will not issue a warning and will create these names for you. As a result, `bmi` will always be missing.
 
 
 ## Find the bug
