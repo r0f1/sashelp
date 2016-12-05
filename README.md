@@ -336,7 +336,7 @@ For example, `sum()` and `avg()` ignore missing values. [SAS doc](http://support
     x1+x2+x3       yields .    # missings are considered
 
 
-### Array variables do not have to exists necessarily
+### Array variables do not have to exist
 
     data alldat;
         merge data90 data91 data92; by id;
@@ -350,7 +350,7 @@ For example, `sum()` and `avg()` ignore missing values. [SAS doc](http://support
         end;
     run;
 
-If the variables `bmi90`, `bmi91`, `bmi92` do not exist in the data sets `data90 data91 data92`, SAS will not issue a warning and will create these names for you. As a result, `bmi` will always be missing.
+If the variables `bmi90`, `bmi91`, `bmi92` do not exist in the data sets `data90 data91 data92`, SAS will not issue a warning. SAS will create these temporary names for you and as a result, `bmi` will always be missing.
 
 
 ## Find the bug
