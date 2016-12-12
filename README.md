@@ -220,7 +220,6 @@ Arrays in the SAS language are different from arrays in many other languages. A 
 ### Deleting 
 
     * delete all labels and formats from a dataset ;
-
     proc datasets nolist;
         modify alldat;
         attrib _all_ label='';
@@ -228,8 +227,7 @@ Arrays in the SAS language are different from arrays in many other languages. A 
         attrib _all_ informat=;
     run;
 
-   * delete libnames, filenames, datasets ;
-
+    * delete libnames, filenames, datasets ;
     libname oldlib clear;
 
     proc datasets nolist;
@@ -237,9 +235,7 @@ Arrays in the SAS language are different from arrays in many other languages. A 
     quit; run;
 
     * delete entire library ;
-    
     proc datasets library=work kill; run; quit;
-
 
 ## Misc
 
