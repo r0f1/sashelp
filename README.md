@@ -22,33 +22,6 @@
 
 [Source](https://support.sas.com/documentation/cdl/en/proc/61895/HTML/default/viewer.htm#a000146729.htm)
 
-<details>
-<summary>Table 1 (work in progress) (click to expand)</summary>
-Plot age-adjusted cohort characteristics.
-
-    proc freq data=alldat;
-        tables agegrp*exposure / out=freqout(keep=agegrp exposure count);
-    run;
-
-    proc print data=freqout; run;
-
-    proc sql;
-        create table alldat_w as
-            select a.*, divide(1,f.count) as t1weight 
-            from alldat a left join freqout f on a.agegrp=f.agegrp and a.exposure=f.exposure;
-        quit;
-    run;
-
-    proc means data=alldat maxdec=4 nolabels missing n mean std stderr;
-        var &vars;
-        class exposure;
-        weight t1weight;
-    run;
-
-Assumption: There is more than one agegroup and more than one exposure group.
-
-</details>
-
 ### Cross-Tabulating
 
     proc freq data=alldat;
