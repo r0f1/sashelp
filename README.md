@@ -24,8 +24,8 @@
 
 ### Cross-Tabulating
 
-    proc freq data=alldat;
-        tables (age height bmi)*year / missing;
+    proc freq data=alldat noprint;
+        tables (age height bmi)*year / missing out=result;
     run;
 
 <details>
