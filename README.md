@@ -235,7 +235,7 @@ Arrays in the SAS language are different from arrays in many other languages. A 
     quit; run;
 
     * delete entire library ;
-    proc datasets library=work kill; run; quit;
+    proc datasets library=work kill nolist; run; quit;
 
 ## Misc
 
@@ -307,6 +307,11 @@ Arrays in the SAS language are different from arrays in many other languages. A 
         freq count;
         var one;
         output out=final_grouped(drop=_freq_ _type_) n=n;
+    run;
+
+    proc final_grouped; 
+        set final_grouped;
+        if n=0 then n=0.0001;
     run;
 
 See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
