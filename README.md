@@ -237,6 +237,24 @@ Arrays in the SAS language are different from arrays in many other languages. A 
     * delete entire library ;
     proc datasets library=work kill nolist; run; quit;
 
+## Graphs and Figures
+
+### Outputting to a specifiy directory
+
+    title &title.;
+    title2 &title2.;
+    ods listing style=statistical gpath=&folder.; 
+    ods graphics on / reset=all imagename=&filename. height=&height. border=off;
+
+    proc sgplot data=alldat; 
+    ...;
+    run;
+
+    ods _all_ close;
+    title "";
+    title2 "";
+
+
 ## Misc
 
 <details>
@@ -350,6 +368,68 @@ Careful if exported from Excel spreadsheet:
 
 See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
 </details>
+
+<details>
+<summary>Exporting to Excel, Macro (click to expand)</summary>
+
+### Exporting to Excel, Macro
+    
+
+    %macro export_excel(dataset, keep=, where=, drop=, folder=, filename=, retain_formats=T);
+
+        %local excelpath formatcodes;
+        %let excelpath = %sysfunc(catx(/,%sysfunc(dequote(&folder.)),%sysfunc(dequote(&filename.))));
+
+        data _tmp_reduced; 
+            set &dataset;
+            %if %length(&where)>0 %then if    &where%str(;);
+            %if %length(&keep)>0  %then keep  &keep%str(;);
+            %if %length(&drop)>0  %then drop  &drop%str(;);
+        run;
+
+        %if %upcase(&retain_formats)=T %then %do;
+
+            proc sql noprint;
+                create table _tmp_vars as
+                select name, format from dictionary.columns
+                where libname="WORK" and memname="_TMP_REDUCED";
+            quit;
+
+            data _tmp_vars;
+                set _tmp_vars end=last;
+                length formatcode $400.;
+                if format ^="" then formatcode=catx(" ",cats("put","(",name,",",format,")"), "as",name,",");
+                else                formatcode=cats(name,",");
+                if last then        formatcode=substr(formatcode,1,length(formatcode)-1);
+            run;
+
+            %let formatcodes=;
+            data _null_;
+                set _tmp_vars;
+                call symput('formatcodes', trim(resolve('&formatcodes.')||' '|| trim(formatcode)));
+            run;
+
+            proc sql noprint;
+                create table _tmp_export as select &formatcodes. from _tmp_reduced;
+            quit;
+         
+            data _tmp_reduced; set _tmp_export; run;
+
+        %end;
+
+        proc export data=_tmp_reduced outfile="&excelpath." dbms=xlsx replace;
+        run;
+
+        proc datasets nolist; delete _tmp_:; quit; run;
+
+    %mend;
+
+    %export_excel(alldat, keep=year rate, folder="/path/to/folder", filename="rates.xlsx");
+
+    [Adapted from here](http://www.mwsug.org/proceedings/2015/PO/MWSUG-2015-PO-01.pdf)
+
+</details>
+
 
 ## Traps and Pitfalls
 
