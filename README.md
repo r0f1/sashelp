@@ -374,6 +374,11 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
 
 ### Exporting to Excel, Macro
     
+    #### Example call
+
+        %export_excel(alldat, keep=year rate, folder="/path/to/folder", filename="rates.xlsx");
+
+    #### Macro
 
     %macro export_excel(dataset, keep=, where=, drop=, folder=, filename=, retain_formats=T);
 
@@ -424,9 +429,7 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
 
     %mend;
 
-    %export_excel(alldat, keep=year rate, folder="/path/to/folder", filename="rates.xlsx");
-
-    [Adapted from here](http://www.mwsug.org/proceedings/2015/PO/MWSUG-2015-PO-01.pdf)
+[Adapted from here](http://www.mwsug.org/proceedings/2015/PO/MWSUG-2015-PO-01.pdf)
 
 </details>
 
