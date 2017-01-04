@@ -254,6 +254,16 @@ Arrays in the SAS language are different from arrays in many other languages. A 
     title "";
     title2 "";
 
+### proc loess
+
+    proc sort data=breast_stage; by stage year; run;
+
+    proc loess data=breast_stage plots=none;
+        model rate=year;
+        by stage;
+        output out=breast_stage_pred;
+    run;
+
 
 ## Misc
 
