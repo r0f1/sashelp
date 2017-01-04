@@ -227,11 +227,12 @@ Arrays in the SAS language are different from arrays in many other languages. A 
         attrib _all_ informat=;
     run;
 
-    * delete libnames, filenames, datasets ;
+    * delete libnames, filenames;
     libname oldlib clear;
 
+    * delete datasets;
     proc datasets nolist;
-        delete olddata1 olddata2 olddata3;
+        delete olddata _tmp_: ;
     quit; run;
 
     * delete entire library ;
