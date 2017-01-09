@@ -88,29 +88,6 @@ OBS= option tells SAS to stop reading the data from the input SAS data set at th
 [Source](https://onlinecourses.science.psu.edu/stat481/node/14)
 </details>
 
-<details>
-<summary>Print variables in alphabetical order (click to expand)</summary>
-
-### Print variables in alphabetical order
-
-    proc sql noprint;                               
-        select distinct name into :varlist separated by ','              
-        from dictionary.columns                      
-        where libname='work' and memname='alldat'
-        order by name;
-
-        create table toprint as 
-            select &varlist from alldat;
-    quit; run;
-
-    proc print data=toprint;
-        var &varlist;
-    run;
-
-[Source](http://www.amadeus.co.uk/sas-training/tips/1/1/139/sorting-variable-names-alphabetically.php)
-
-</details>
-
 ### Writing results to an separate output file instead of the log
 
     proc printto print='path/to/my/file.sasoutput' new; run;
@@ -213,6 +190,10 @@ Arrays in the SAS language are different from arrays in many other languages. A 
         ...;
     %end;
 
+
+[%do_over()](http://www2.sas.com/proceedings/sugi31/040-31.pdf)
+
+
 ### Proc SQL
 
     * selecting minimum, maximum into a macro variable ;
@@ -228,6 +209,20 @@ Arrays in the SAS language are different from arrays in many other languages. A 
             from rate_by_agegroup e left join population_by_agegroup a 
                 on e.gender=a.gender and e.year=a.year and e.ag=a.ag;
     quit; run;
+
+    * print variables of a dataset in alphabetical order ;
+    proc sql noprint;                               
+        select distinct name into :varlist separated by ','              
+        from dictionary.columns                      
+        where libname='WORK' and memname='ALLDAT'
+        order by name;
+
+        create table printme as select &varlist from alldat;
+    quit; run;
+
+    proc print data=printme; 
+        var &varlist;
+    run;
 
 See [print_library_info.sas](https://github.com/r0f1/sashelp/blob/master/macros/plot_series_scatter_by.sas) for more examples.
 
