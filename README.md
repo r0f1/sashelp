@@ -201,6 +201,37 @@ Arrays in the SAS language are different from arrays in many other languages. A 
 + [Defining your own subscript range](http://www2.sas.com/proceedings/sugi30/242-30.pdf)
 </details>
 
+### Loops
+
+#### Loop in Macro
+
+    %let stages=2 3 4 6 7;
+
+    %let n = %sysfunc(countw(&stages));
+    %do i=1 %to &n;
+        %let val = %scan(&stages,&i);
+        ...;
+    %end;
+
+### Proc SQL
+
+    * selecting minimum, maximum into a macro variable ;
+    proc sql noprint;
+        select min(rate), max(rate) into :min_y, :max_y 
+        from alldat; 
+    quit; run;
+
+    * creating a new dataset, left joining ;
+    proc sql noprint;
+        create table alldat as
+            select * 
+            from rate_by_agegroup e left join population_by_agegroup a 
+                on e.gender=a.gender and e.year=a.year and e.ag=a.ag;
+    quit; run;
+
+See [print_library_info.sas](https://github.com/r0f1/sashelp/macros/print_library_info.sas) for more examples.
+
+
 ## Dataset maintainance
 
 ### Reading/Writing from/to disk
@@ -269,56 +300,6 @@ Arrays in the SAS language are different from arrays in many other languages. A 
 ## Misc
 
 <details>
-<summary>Iterating over all datasets of library (click to expand)</summary>
-    
-    libname store "/path/to/library";
-
-    %macro printInfo();
-        %local dataset_count dataset_name varlist iter;
-
-        ods output members=dataset_list;
-            proc datasets library=store memtype=data; run;
-        quit;
-
-        proc sql noprint;
-            select count(*) into :dataset_count from dataset_list;
-        quit;
-
-        %let iter=1;
-        %do %while (&iter.<= &dataset_count.);
-
-            data _null_;
-                set dataset_list(firstobs=&iter. obs=&iter.);
-                call symput("dataset_name",upcase(strip(name)));
-            run;
-
-            proc sql noprint;
-                create table varnames as
-                    select memname, name, type from dictionary.columns
-                    where libname='STORE' and memname="&dataset_name.";
-            quit;
-
-            proc sql noprint;
-                create table dsinfo as
-                    select count(*) as number_observations from &dataset_name.;
-            quit;
-
-            proc sql noprint;
-                 select name into :varlist separated by ' ' from varnames(obs=10);
-            quit;
-
-            proc print data=varnames; run;
-            proc print data=dsinfo; run;
-            proc print data=store.&dataset_name.(obs=20 keep=&varlist.); run;
-
-            %let iter=%eval(&iter.+1);
-        %end;
-    %mend;
-
-</details>
-
-
-<details>
 <summary>Grouping of variables with zero occurences (click to expand)</summary>
 ### Grouping of variables with zero occurences
 
@@ -380,69 +361,30 @@ Careful if exported from Excel spreadsheet:
 See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
 </details>
 
-<details>
-<summary>Exporting to Excel, Macro (click to expand)</summary>
 
-### Exporting to Excel, Macro
-    
-#### Example call
+## Macros that I have written
 
-    %export_excel(alldat, keep=year rate, folder="/path/to/folder", filename="rates.xlsx");
 
-#### Macro
+### %plot_series_scatter_by()
 
-    %macro export_excel(dataset, keep=, where=, drop=, folder=, filename=, retain_formats=T);
+Scatter + series plot in one figure.
 
-        %local excelpath formatcodes;
-        %let excelpath = %sysfunc(catx(/,%sysfunc(dequote(&folder.)),%sysfunc(dequote(&filename.))));
+    %plot_series_scatter_by(alldat, 
+        scatter_x=year, scatter_y=orig, series_x=year, series_y=predicted,
+        group=group, log=0, label_x="Year", label_y="Rate",
+        title="My title", title2="My subtitle", folder="/path/to/folder", filename="image", height=900px);
 
-        data _tmp_reduced; 
-            set &dataset;
-            %if %length(&where)>0 %then if    &where%str(;);
-            %if %length(&keep)>0  %then keep  &keep%str(;);
-            %if %length(&drop)>0  %then drop  &drop%str(;);
-        run;
+### %export_excel()
 
-        %if %upcase(&retain_formats)=T %then %do;
+Export SAS data set as Excel spreadsheet, while (optionally) retaining the assigned format names.
 
-            proc sql noprint;
-                create table _tmp_vars as
-                select name, format from dictionary.columns
-                where libname="WORK" and memname="_TMP_REDUCED";
-            quit;
+    %export_excel(alldat, keep=year rate, folder="/path/to/folder", filename="rates.xlsx", retain_formats=T);
 
-            data _tmp_vars;
-                set _tmp_vars end=last;
-                length formatcode $400.;
-                if format ^="" then formatcode=catx(" ",cats("put","(",name,",",format,")"), "as",name,",");
-                else                formatcode=cats(name,",");
-                if last then        formatcode=substr(formatcode,1,length(formatcode)-1);
-            run;
+### %print_library_info()
 
-            %let formatcodes=;
-            data _null_;
-                set _tmp_vars;
-                call symput('formatcodes', trim(resolve('&formatcodes.')||' '|| trim(formatcode)));
-            run;
+Print variable names, number of observations and the first 20 observations (of the first 10 variables) of each data set in a specified folder.
 
-            proc sql noprint;
-                create table _tmp_export as select &formatcodes. from _tmp_reduced;
-            quit;
-         
-            data _tmp_reduced; set _tmp_export; run;
-
-        %end;
-
-        proc export data=_tmp_reduced outfile="&excelpath." dbms=xlsx replace;
-        run;
-
-        proc datasets nolist; delete _tmp_:; quit; run;
-
-    %mend;
-
-[Adapted from here](http://www.mwsug.org/proceedings/2015/PO/MWSUG-2015-PO-01.pdf)
-
-</details>
+    %print_library_info("/path/to/folder");
 
 
 ## Traps and Pitfalls
