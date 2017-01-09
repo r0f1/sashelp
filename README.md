@@ -182,14 +182,15 @@ Arrays in the SAS language are different from arrays in many other languages. A 
 
 #### Loop in Macro
 
-    %let stages=2 3 4 6 7;
+```SAS
+%let stages=2 3 4 6 7;
 
-    %let n = %sysfunc(countw(&stages));
-    %do i=1 %to &n;
-        %let val = %scan(&stages,&i);
-        ...;
-    %end;
-
+%let n = %sysfunc(countw(&stages));
+%do i=1 %to &n;
+    %let val = %scan(&stages,&i);
+    ...;
+%end;
+```
 
 [%do_over()](http://www2.sas.com/proceedings/sugi31/040-31.pdf)
 
