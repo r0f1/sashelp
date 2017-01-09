@@ -104,26 +104,26 @@ proc printto run;
 
 ### Filter/Split a dataset
 ```SAS
-    data male;
-        set alldat(where=(sex=1));
-    run;
+data male;
+    set alldat(where=(sex=1));
+run;
 
-    data male(where=(sex=1)) female(where=(sex=2));
-        set alldat;
-    run;
+data male(where=(sex=1)) female(where=(sex=2));
+    set alldat;
+run;
 
-    data noinfo light medium heavy;
-        set alldat;
-        if      weight <= 0   then output noinfo;
-        else if weight <= 85  then output light;
-        else if weight <= 110 then output medium;
-        else                       output heavy;
-    run;
+data noinfo light medium heavy;
+    set alldat;
+    if      weight <= 0   then output noinfo;
+    else if weight <= 85  then output light;
+    else if weight <= 110 then output medium;
+    else                       output heavy;
+run;
 
-    *create data set with observations 100 through 200*;
-    data reduced;
-        set alldat(firstobs=100 obs=200);
-    run;
+*create data set with observations 100 through 200*;
+data reduced;
+    set alldat(firstobs=100 obs=200);
+run;
 ```
 
 <details>
@@ -138,10 +138,10 @@ More examples [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).
 ### Creating quartiles
 
 ```SAS
-    proc rank data=alldat out=alldat groups=4;
-        var bmi;
-        ranks bmi_q;
-    run;
+proc rank data=alldat out=alldat groups=4;
+    var bmi;
+    ranks bmi_q;
+run;
 ```
 
 Specifying the *out* parameter is important. By default, *proc rank* will generate an incremental data set with a prefix of the original one (here: alldat2). [Source](http://www.lexjansen.com/nesug/nesug09/ap/AP01.pdf)
@@ -152,32 +152,32 @@ Specifying the *out* parameter is important. By default, *proc rank* will genera
 Arrays in the SAS language are different from arrays in many other languages. A SAS array is simply a convenient way of temporarily identifying a group of variables. It is not a data structure, and the array name is not a variable.
 
 ```SAS
-    *Functions*;
-    array incomea  {*} income08 income09 income10 income11 income12;
+*Functions*;
+array incomea  {*} income08 income09 income10 income11 income12;
 
-    sum_income  = sum(of incomea);
-    mean_income = mean(of incomea);
-    min_income  = min(of incomea);
-    max_income  = max(of incomea);
-
-
-    *Looping*;
-    array wtkga   {5} wtkg1-wtkg5;
-    array heighta {5} htm1-htm5;
-    array bmia    {5} bmi1-bmi5; /*derived*/
-
-    do i=1 to dim(bmia);
-        bmia(i)=wtkga(i)/(heighta(i)**2);
-    end;
+sum_income  = sum(of incomea);
+mean_income = mean(of incomea);
+min_income  = min(of incomea);
+max_income  = max(of incomea);
 
 
-    *Initial values*;
-    array sizesa {*} petite small medium large extra_large (2, 4, 6, 8, 10); 
-    array citiesa {*} $ ('New York' 'Los Angeles' 'Dallas' 'Chicago'); 
+*Looping*;
+array wtkga   {5} wtkg1-wtkg5;
+array heighta {5} htm1-htm5;
+array bmia    {5} bmi1-bmi5; /*derived*/
+
+do i=1 to dim(bmia);
+    bmia(i)=wtkga(i)/(heighta(i)**2);
+end;
 
 
-    * Defining your own subscript range*;
-    array tempa {6:18} temp6 – temp18;
+*Initial values*;
+array sizesa {*} petite small medium large extra_large (2, 4, 6, 8, 10); 
+array citiesa {*} $ ('New York' 'Los Angeles' 'Dallas' 'Chicago'); 
+
+
+* Defining your own subscript range*;
+array tempa {6:18} temp6 – temp18;
 ```
 
 <details>
