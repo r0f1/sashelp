@@ -229,7 +229,7 @@ Arrays in the SAS language are different from arrays in many other languages. A 
                 on e.gender=a.gender and e.year=a.year and e.ag=a.ag;
     quit; run;
 
-See [print_library_info.sas](https://github.com/r0f1/sashelp/macros/print_library_info.sas) for more examples.
+See [print_library_info.sas](https://github.com/r0f1/sashelp/blob/master/macros/plot_series_scatter_by.sas) for more examples.
 
 
 ## Dataset maintainance
