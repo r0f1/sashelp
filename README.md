@@ -11,7 +11,7 @@
 proc contents data=alldat;
 run;
 
-proc means data=alldat maxdec=1 nolabels missing n nmiss mean std;
+proc means data=alldat maxdec=2 nolabels missing n nmiss mean std;
     var age;
     class exposure;
 run;
@@ -209,33 +209,56 @@ array tempa {6:18} temp6 – temp18;
 ### Proc SQL
 
 ```SAS
-* selecting minimum, maximum into a macro variable ;
+* select minimum, maximum into a macro variable ;
 proc sql noprint;
     select min(rate), max(rate) into :min_y, :max_y 
     from alldat; 
 quit; run;
 
-* creating a new dataset, left joining ;
+
+* select distinct values into a macro variable;
+* then iterate over it;
+proc sql noprint;
+    select distinct(stage) into :stages separated by " "
+    from alldat;
+quit;   
+
+%let n = %sysfunc(countw(&stages));
+%do i=1 %to &n;
+    %let val = %scan(&stages,&i);
+
+    data alldat2;
+       set alldat;
+       if stage=&val.;
+
+       *put the label of a variable in a macro variable*;
+       call symput("fmtval", vvalue(stage)); 
+    run;
+
+
+* select variables of a dataset into a macro variable in alphabetical order ;
+* then print the dataset ;
+proc sql noprint;                               
+    select distinct name into :varlist separated by ','              
+    from dictionary.columns                      
+    where libname='WORK' and memname='ALLDAT'
+    order by name;
+quit; run;
+proc sql noprint;                               
+    create table printme as select &varlist from alldat;
+quit; run;
+proc print data=printme; 
+    var &varlist;
+run;
+
+
+* create a new dataset, left joining ;
 proc sql noprint;
     create table alldat as
         select * 
         from rate_by_agegroup e left join population_by_agegroup a 
             on e.gender=a.gender and e.year=a.year and e.ag=a.ag;
 quit; run;
-
-* print variables of a dataset in alphabetical order ;
-proc sql noprint;                               
-    select distinct name into :varlist separated by ','              
-    from dictionary.columns                      
-    where libname='WORK' and memname='ALLDAT'
-    order by name;
-
-    create table printme as select &varlist from alldat;
-quit; run;
-
-proc print data=printme; 
-    var &varlist;
-run;
 ```
 
 See [print_library_info.sas](https://github.com/r0f1/sashelp/blob/master/macros/plot_series_scatter_by.sas) for more examples.
