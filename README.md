@@ -189,24 +189,9 @@ array tempa {6:18} temp6 – temp18;
 + [Defining your own subscript range](http://www2.sas.com/proceedings/sugi30/242-30.pdf)
 </details>
 
-### Loops
-
-#### Loop in Macro
-
-```SAS
-%let stages=2 3 4 6 7;
-
-%let n = %sysfunc(countw(&stages));
-%do i=1 %to &n;
-    %let val = %scan(&stages,&i);
-    ...;
-%end;
-```
-
-[%do_over()](http://www2.sas.com/proceedings/sugi31/040-31.pdf)
-
 
 ### Proc SQL
+
 
 ```SAS
 * select minimum, maximum into a macro variable ;
@@ -216,8 +201,7 @@ proc sql noprint;
 quit; run;
 
 
-* select distinct values into a macro variable;
-* then iterate over it;
+* select distinct values into a macro variable then iterate/loop over it;
 proc sql noprint;
     select distinct(stage) into :stages separated by " "
     from alldat;
@@ -230,14 +214,12 @@ quit;
     data alldat2;
        set alldat;
        if stage=&val.;
-
        *put the label of a variable in a macro variable*;
        call symput("fmtval", vvalue(stage)); 
     run;
 
 
-* select variables of a dataset into a macro variable in alphabetical order ;
-* then print the dataset ;
+* select variables of a dataset into a macro variable in alphabetical order then print the dataset ;
 proc sql noprint;                               
     select distinct name into :varlist separated by ','              
     from dictionary.columns                      
@@ -260,6 +242,8 @@ proc sql noprint;
             on e.gender=a.gender and e.year=a.year and e.ag=a.ag;
 quit; run;
 ```
+
+[%do_over()](http://www2.sas.com/proceedings/sugi31/040-31.pdf)
 
 See [print_library_info.sas](https://github.com/r0f1/sashelp/blob/master/macros/plot_series_scatter_by.sas) for more examples.
 
