@@ -201,6 +201,8 @@ proc sql noprint;
 quit; run;
 
 
+
+
 * select distinct values into a macro variable then iterate/loop over it;
 proc sql noprint;
     select distinct(stage) into :stages separated by " "
@@ -219,6 +221,8 @@ quit;
     run;
 
 
+
+
 * select variables of a dataset into a macro variable in alphabetical order then print the dataset ;
 proc sql noprint;                               
     select distinct name into :varlist separated by ','              
@@ -234,6 +238,8 @@ proc print data=printme;
 run;
 
 
+
+
 * create a new dataset, left joining ;
 proc sql noprint;
     create table alldat as
@@ -241,6 +247,31 @@ proc sql noprint;
         from rate_by_agegroup e left join population_by_agegroup a 
             on e.gender=a.gender and e.year=a.year and e.ag=a.ag;
 quit; run;
+
+
+
+
+* taking the median of 5 year groups, starting 1990 ;
+
+* create indicator variable to distinguish groups ;
+data alldat;
+    set alldat;
+    year5 = ceil(max(0, year-1990)/5);
+run;
+
+* calculate medians of groups by gender and agegroup ;
+proc sql noprint;
+    create table alldat_f as 
+        select *, median(n) as m from alldat group by year5, gender, ag7_id;
+quit; run;
+
+* delete unnecessary groups ;
+data myoc_mort_f;
+    set myoc_mort_f;
+    if mod(year, 5) = 0;
+    keep year gender ag7_id m;
+run;
+
 ```
 
 [%do_over()](http://www2.sas.com/proceedings/sugi31/040-31.pdf)
