@@ -266,8 +266,8 @@ proc sql noprint;
 quit; run;
 
 * delete unnecessary groups ;
-data myoc_mort_f;
-    set myoc_mort_f;
+data alldat_f;
+    set alldat_f;
     if mod(year, 5) = 0;
     keep year gender ag7_id m;
 run;
