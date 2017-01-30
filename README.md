@@ -1,27 +1,26 @@
-# Useful SAS code
+# SAS
 
+## Investigating
 
-## Exploratory data analysis
-
-### Finding out n, distribution and missing values
+### Investigating N, Distribution, Missing Values
 
 ```SAS
-%let vars  = bmi n_cigarettes alc_grams;
-
+* Print all names of available variables ;
 proc contents data=alldat;
 run;
 
+* Print distribution ;
 proc means data=alldat maxdec=2 nolabels missing n nmiss mean std;
     var age;
     class exposure;
 run;
 
+* Print more detailed information about distribution ;
 proc means data=alldat nolabels missing n nmiss mean median min max p1 p5 q1 q3 p95 p99 std;
-    var &vars;
+    var bmi n_cigarettes alc_grams;
     class period exposure;
 run;
 ```
-
 [Source](https://support.sas.com/documentation/cdl/en/proc/61895/HTML/default/viewer.htm#a000146729.htm)
 
 ### Cross-Tabulating
@@ -31,29 +30,6 @@ proc freq data=alldat noprint;
 run;
 ```
 
-<details>
-<summary>Missprint/Missing difference (click to expand)</summary>
-**Missprint** produces:
-
-A|Frequency|Percent|Cumulative Frequency|Cumulative Percent
----|---|---|---|---
-.|2|.|.|.
-1|2|50.00|2|50.00
-2|2|50.00|4|100.00
-
-**Missing** produces:
-
-A|Frequency|Percent|Cumulative Frequency|Cumulative Percent
----|---|---|---|---
-.|2|33.33|2|33.33
-1|2|33.33|4|66.67
-2|2|33.33|6|100.00
-
-[Source](https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_freq_sect016.htm)
-
-</details>
-
-
 ### Missingness Patterns
 ```SAS
 proc mi data=alldat nimpute=0;
@@ -61,13 +37,9 @@ proc mi data=alldat nimpute=0;
     ods select misspattern;
 run;
 ```
+[Source](http://www.ats.ucla.edu/stat/sas/faq/nummiss_sas.htm).
 
-Missingness patterns of character variables: [here](http://www.ats.ucla.edu/stat/sas/faq/nummiss_sas.htm).
-
-## Investigating interesting observations
-
-### Printing some infos
-
+### Investigating Interesting Observations
 ```SAS
 * Print the first 20 observations ;
 proc print data=alldat(obs=20);
@@ -77,33 +49,39 @@ run;
 proc print data=alldat(firstobs=50 obs=70);
 run;
 
+* Print a specific observation ;
 proc print data=alldat;
     where id=1234; 
 run;
 
+* Print all observations satisfying certain criteria ;
 proc print data=alldat;
-    var name gender smoking;
     where bmi > 25;
+    var name gender smoking;
 run;
-```
 
-<details>
-<summary>obs= and firstobs= explaination (click to expand)</summary>
-FIRSTOBS= option tells SAS to begin reading the data from the input SAS data set at the line number specified by FIRSTOBS.  
-OBS= option tells SAS to stop reading the data from the input SAS data set at the line number specified by OBS.  
-[Source](https://onlinecourses.science.psu.edu/stat481/node/14)
-</details>
+* Print a random subset of the data *;
+proc surveyselect data=alldat method=srs rep=1 sampsize=50 seed=1 out=random_sample;
+run;
+proc print data=random_sample;
+run;
 
-### Writing results to an separate output file instead of the log
-```SAS
+* Print to a specific output file
 proc printto print='path/to/my/file.sasoutput' new; run;
     * call proc freq, proc means, etc.;
 proc printto run;
 ```
-## Creating new datasets and variables
 
-### Filter/Split a dataset
+## Deriving New Datasets
+
+### Filtering and Splitting of Datasets
+
 ```SAS
+data male;
+    set alldat;
+    if sex=1;
+run;
+
 data male;
     set alldat(where=(sex=1));
 run;
@@ -119,23 +97,133 @@ data noinfo light medium heavy;
     else if weight <= 110 then output medium;
     else                       output heavy;
 run;
-
-*create data set with observations 100 through 200*;
-data reduced;
-    set alldat(firstobs=100 obs=200);
-run;
 ```
-
 <details>
-<summary>Output statement description (click to expand)</summary>
+<summary>More info (click to expand)</summary>
 The OUTPUT statement tells SAS to write the current observation to a SAS data set immediately, not at the end of the DATA step. If no data set name is specified in the OUTPUT statement, the observation is written all that are listed in the DATA statement. By default, every DATA step contains an implicit OUTPUT statement at the end of each iteration that tells SAS to write observations to the data set or data sets that are being created. Placing an explicit OUTPUT statement in a DATA step overrides the automatic output, and SAS adds an observation to a data set only when an explicit OUTPUT statement is executed. Once you use an OUTPUT statement to write an observation to any one data set, however, there is no implicit OUTPUT statement at the end of the DATA step. In this situation, a DATA step writes an observation to a data set only when an explicit OUTPUT executes. You can use the OUTPUT statement alone or as part of an IF-THEN or SELECT statement or in DO-loop processing. [Source](https://v8doc.sas.com/sashtml/lgref/z0194540.htm)
 
 More examples [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).  
+
+[Difference between IF and WHERE](http://www2.sas.com/proceedings/sugi31/238-31.pdf).
 </details>
 
-[IF and WHERE](http://www2.sas.com/proceedings/sugi31/238-31.pdf).
+### Transposing
 
-### Creating quartiles
+**population by age groups**  
+  
+**have**
+
+|gender|postal_code|year|ag1|ag2|ag3|ag4|
+|---|---|---|---|---|---|---|
+|1|1234|2017|35|47|99|17|
+|2|1234|2017|34|42|102|20|
+
+**want**
+
+|gender|postal_code|year|ag|count|
+|---|---|---|---|---|
+|1|1234|2017|ag1|35|
+|1|1234|2017|ag2|47|
+|1|1234|2017|ag3|99|
+|1|1234|2017|ag4|17|
+|2|1234|2017|ag1|34|
+|2|1234|2017|ag2|42|
+|2|1234|2017|ag3|102|
+|2|1234|2017|ag4|20|
+
+```SAS
+proc sort data=population;
+    by year gender postal_code;
+run;
+
+proc transpose data=population out=population_t;
+    by year gender postal_code;
+run;
+```
+
+
+### Reading/Writing Datasets
+
+```SAS
+libname store '/path/to/my/folder';
+
+* Read from .sas7bdat file ;
+data alldat; 
+    set store.alldat;
+run;
+
+* Write to .sas7bdat file ;
+data store.alldat; 
+   set alldat; 
+run;
+
+* Read from csv file separated by semicolons *;
+proc import datafile="/path/to/data.csv" out=alldat dbms=csv replace;
+    getnames=yes;
+run;
+
+* Read from csv file separated by other separator *;
+proc import datafile="/path/to/data.csv" out=alldat dbms=dlm replace;
+    delimiter="|";
+    getnames=yes;
+run;
+
+* Write to Excel*;
+%include "export_excel.sas";
+%export_excel(alldat, keep=year gender age, where=bmi le 30,
+                folder="/path/to/folder", filename="filename.xlsx");
+```
+
+
+### Deleting
+
+```SAS
+* delete all labels and formats from a dataset ;
+proc datasets nolist;
+    modify alldat;
+    attrib _all_ label='';
+    attrib _all_ format=;
+    attrib _all_ informat=;
+run;
+
+* delete libnames, filenames;
+libname oldlib clear;
+
+* delete datasets by enumeration;
+proc datasets nolist;
+    delete olddata1 olddata2;
+quit; run;
+
+* delete datasets by common prefix (here _tmp_);
+proc datasets nolist;
+    delete _tmp_: ;
+quit; run;
+
+* delete entire library ;
+proc datasets library=work kill nolist; 
+quit; run;
+```
+
+
+## Deriving New Variables
+
+### Based on Functions and Cutoffs
+
+```SAS
+data alldat;
+    set alldat;
+
+    agegroup=min(int((age-30)/5),4);
+    bmi=weight/(height**2);
+
+    parity=.;
+         if npar=0          then parity=1;
+    else if npar in (1,2,3) then parity=2;
+    else if npar > 3        then parity=3;
+run;
+```
+
+### Creating Quartiles
 
 ```SAS
 proc rank data=alldat out=alldat groups=4;
@@ -147,7 +235,9 @@ run;
 Specifying the *out* parameter is important. By default, *proc rank* will generate an incremental data set with a prefix of the original one (here: alldat2). [Source](http://www.lexjansen.com/nesug/nesug09/ap/AP01.pdf)
 
 
-### Arrays: creation and iterating 
+## Further Data Processing Techniques
+
+### Arrays: Creation and Iterating 
 
 Arrays in the SAS language are different from arrays in many other languages. A SAS array is simply a convenient way of temporarily identifying a group of variables. It is not a data structure, and the array name is not a variable.
 
@@ -275,50 +365,13 @@ run;
 ```
 
 [%do_over()](http://www2.sas.com/proceedings/sugi31/040-31.pdf)
-
 See [print_library_info.sas](https://github.com/r0f1/sashelp/blob/master/macros/plot_series_scatter_by.sas) for more examples.
 
 
-## Dataset maintainance
-
-### Reading/Writing from/to disk
-
-```SAS
-libname store '/path/to/my/folder';
-
-* Read from file ;
-data alldat; set store.alldat; run;
-
-* Write to file ;
-data store.alldat; set alldat; run;
-```
-
-### Deleting 
-
-```SAS
-* delete all labels and formats from a dataset ;
-proc datasets nolist;
-    modify alldat;
-    attrib _all_ label='';
-    attrib _all_ format=;
-    attrib _all_ informat=;
-run;
-
-* delete libnames, filenames;
-libname oldlib clear;
-
-* delete datasets;
-proc datasets nolist;
-    delete olddata _tmp_: ;
-quit; run;
-
-* delete entire library ;
-proc datasets library=work kill nolist; run; quit;
-```
 
 ## Graphs and Figures
 
-### Outputting to a specifiy directory
+### Outputting to a Specifiy Directory
 
 ```SAS
 title &title.;
@@ -395,32 +448,6 @@ run;
 See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
 </details>
 
-<details>
-<summary>Importing a CSV file (click to expand)</summary>
-
-### Importing a CSV file
-
-```SAS
-* CSV *;
-filename myfile '/path/to/data.csv';
-proc import datafile=myfile out=alldat dbms=csv replace;
-    getnames=yes;
-run;
-
-* Other separator *;
-proc import datafile=myfile out=alldat dbms=dlm replace;
-    delimiter="|";
-    getnames=yes;
-run;
-```
-
-Careful if exported from Excel spreadsheet:
-
-* missing values should be missing not coded as a - (hyphen)
-* numbers must not have any zero separator (1000 not 1.000)
-
-See also [here](http://www.ats.ucla.edu/stat/sas/faq/read_delim.htm).
-</details>
 
 
 ## Macros that I have written
