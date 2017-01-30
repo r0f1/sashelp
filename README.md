@@ -21,7 +21,6 @@ proc means data=alldat nolabels missing n nmiss mean median min max p1 p5 q1 q3 
     class period exposure;
 run;
 ```
-[Source](https://support.sas.com/documentation/cdl/en/proc/61895/HTML/default/viewer.htm#a000146729.htm)
 
 ### Cross-Tabulating
 ```SAS
@@ -37,7 +36,6 @@ proc mi data=alldat nimpute=0;
     ods select misspattern;
 run;
 ```
-[Source](http://www.ats.ucla.edu/stat/sas/faq/nummiss_sas.htm).
 
 ### Investigating Interesting Observations
 ```SAS
@@ -66,7 +64,7 @@ run;
 proc print data=random_sample;
 run;
 
-* Print to a specific output file
+* Print to a specific output file *;
 proc printto print='path/to/my/file.sasoutput' new; run;
     * call proc freq, proc means, etc.;
 proc printto run;
@@ -98,18 +96,20 @@ data noinfo light medium heavy;
     else                       output heavy;
 run;
 ```
-<details>
-<summary>More info (click to expand)</summary>
-The OUTPUT statement tells SAS to write the current observation to a SAS data set immediately, not at the end of the DATA step. If no data set name is specified in the OUTPUT statement, the observation is written all that are listed in the DATA statement. By default, every DATA step contains an implicit OUTPUT statement at the end of each iteration that tells SAS to write observations to the data set or data sets that are being created. Placing an explicit OUTPUT statement in a DATA step overrides the automatic output, and SAS adds an observation to a data set only when an explicit OUTPUT statement is executed. Once you use an OUTPUT statement to write an observation to any one data set, however, there is no implicit OUTPUT statement at the end of the DATA step. In this situation, a DATA step writes an observation to a data set only when an explicit OUTPUT executes. You can use the OUTPUT statement alone or as part of an IF-THEN or SELECT statement or in DO-loop processing. [Source](https://v8doc.sas.com/sashtml/lgref/z0194540.htm)
-
-More examples [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).  
-
-[Difference between IF and WHERE](http://www2.sas.com/proceedings/sugi31/238-31.pdf).
-</details>
 
 ### Transposing
 
-**population by age groups**  
+```SAS
+proc sort data=population;
+    by year gender postal_code;
+run;
+
+proc transpose data=population out=population_t;
+    by year gender postal_code;
+run;
+```
+<details>
+<summary>Tables before and after (click to expand)</summary>
   
 **have**
 
@@ -130,16 +130,7 @@ More examples [here](http://www.lexjansen.com/nesug/nesug06/dm/da30.pdf).
 |2|1234|2017|ag2|42|
 |2|1234|2017|ag3|102|
 |2|1234|2017|ag4|20|
-
-```SAS
-proc sort data=population;
-    by year gender postal_code;
-run;
-
-proc transpose data=population out=population_t;
-    by year gender postal_code;
-run;
-```
+</details>
 
 
 ### Reading/Writing Datasets
@@ -210,16 +201,33 @@ quit; run;
 ### Based on Functions and Cutoffs
 
 ```SAS
+proc format; 
+    value genderf
+        1="male"
+        2="female";
+    value parityf
+        1="no children"
+        2="1-3 children"
+        3="4 or more children";
+run;
+
 data alldat;
     set alldat;
 
-    agegroup=min(int((age-30)/5),4);
+    agegrp=min(int((age-30)/5),4);
     bmi=weight/(height**2);
 
     parity=.;
          if npar=0          then parity=1;
     else if npar in (1,2,3) then parity=2;
     else if npar > 3        then parity=3;
+
+    label  bmi="Body-Mass-Index";
+
+    format gender genderf.
+           parity parityf;
+
+    keep   id gender agegrp bmi parity;
 run;
 ```
 
@@ -231,9 +239,6 @@ proc rank data=alldat out=alldat groups=4;
     ranks bmi_q;
 run;
 ```
-
-Specifying the *out* parameter is important. By default, *proc rank* will generate an incremental data set with a prefix of the original one (here: alldat2). [Source](http://www.lexjansen.com/nesug/nesug09/ap/AP01.pdf)
-
 
 ## Further Data Processing Techniques
 
