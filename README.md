@@ -201,6 +201,7 @@ quit; run;
 ### Based on Functions and Cutoffs
 
 ```SAS
+* create a format *;
 proc format; 
     value genderf
         1="male"
@@ -225,7 +226,7 @@ data alldat;
     label  bmi="Body-Mass-Index";
 
     format gender genderf.
-           parity parityf;
+           parity parityf.;
 
     keep   id gender agegrp bmi parity;
 run;
