@@ -5,17 +5,17 @@
 ### Investigating N, Distribution, Missing Values
 
 ```SAS
-* Print all names of available variables ;
+* print all names of available variables ;
 proc contents data=alldat;
 run;
 
-* Print distribution ;
+* print distribution ;
 proc means data=alldat maxdec=2 nolabels missing n nmiss mean std;
     var age;
     class exposure;
 run;
 
-* Print more detailed information about distribution ;
+* print more detailed information about distribution ;
 proc means data=alldat nolabels missing n nmiss mean median min max p1 p5 q1 q3 p95 p99 std;
     var bmi n_cigarettes alc_grams;
     class period exposure;
@@ -39,32 +39,32 @@ run;
 
 ### Investigating Interesting Observations
 ```SAS
-* Print the first 20 observations ;
+* print the first 20 observations ;
 proc print data=alldat(obs=20);
 run;
 
-* Print the observations 50 through 70 ;
+* print the observations 50 through 70 ;
 proc print data=alldat(firstobs=50 obs=70);
 run;
 
-* Print a specific observation ;
+* print a specific observation ;
 proc print data=alldat;
     where id=1234; 
 run;
 
-* Print all observations satisfying certain criteria ;
+* print all observations satisfying certain criteria ;
 proc print data=alldat;
     where bmi > 25;
     var name gender smoking;
 run;
 
-* Print a random subset of the data *;
+* print a random subset of the data ;
 proc surveyselect data=alldat method=srs rep=1 sampsize=50 seed=1 out=random_sample;
 run;
 proc print data=random_sample;
 run;
 
-* Print to a specific output file *;
+* print to a specific output file ;
 proc printto print='path/to/my/file.sasoutput' new; run;
     * call proc freq, proc means, etc.;
 proc printto run;
@@ -109,16 +109,16 @@ proc transpose data=population out=population_t;
 run;
 ```
 <details>
-<summary>Tables before and after (click to expand)</summary>
+<summary>Tables before and after transposing (click to expand)</summary>
   
-**have**
+**before**
 
 |gender|postal_code|year|ag1|ag2|ag3|ag4|
 |---|---|---|---|---|---|---|
 |1|1234|2017|35|47|99|17|
 |2|1234|2017|34|42|102|20|
 
-**want**
+**after**
 
 |gender|postal_code|year|ag|count|
 |---|---|---|---|---|
@@ -138,28 +138,28 @@ run;
 ```SAS
 libname store '/path/to/my/folder';
 
-* Read from .sas7bdat file ;
+* read from .sas7bdat file ;
 data alldat; 
     set store.alldat;
 run;
 
-* Write to .sas7bdat file ;
+* write to .sas7bdat file ;
 data store.alldat; 
    set alldat; 
 run;
 
-* Read from csv file separated by semicolons *;
+* read from csv file separated by semicolons ;
 proc import datafile="/path/to/data.csv" out=alldat dbms=csv replace;
     getnames=yes;
 run;
 
-* Read from csv file separated by other separator *;
+* read from csv file separated by other separator ;
 proc import datafile="/path/to/data.csv" out=alldat dbms=dlm replace;
     delimiter="|";
     getnames=yes;
 run;
 
-* Write to Excel*;
+* write to excel spreadsheet ;
 %include "export_excel.sas";
 %export_excel(alldat, keep=year gender age, where=bmi le 30,
                 folder="/path/to/folder", filename="filename.xlsx");
@@ -177,15 +177,15 @@ proc datasets nolist;
     attrib _all_ informat=;
 run;
 
-* delete libnames, filenames;
+* delete libnames, filenames ;
 libname oldlib clear;
 
-* delete datasets by enumeration;
+* delete datasets by enumeration ;
 proc datasets nolist;
     delete olddata1 olddata2;
 quit; run;
 
-* delete datasets by common prefix (here _tmp_);
+* delete datasets by common prefix (here _tmp_) ;
 proc datasets nolist;
     delete _tmp_: ;
 quit; run;
@@ -201,7 +201,6 @@ quit; run;
 ### Based on Functions and Cutoffs
 
 ```SAS
-* create a format *;
 proc format; 
     value genderf
         1="male"
@@ -248,7 +247,7 @@ run;
 Arrays in the SAS language are different from arrays in many other languages. A SAS array is simply a convenient way of temporarily identifying a group of variables. It is not a data structure, and the array name is not a variable.
 
 ```SAS
-*Functions*;
+* functions ;
 array incomea  {*} income08 income09 income10 income11 income12;
 
 sum_income  = sum(of incomea);
@@ -257,7 +256,7 @@ min_income  = min(of incomea);
 max_income  = max(of incomea);
 
 
-*Looping*;
+* looping ;
 array wtkga   {5} wtkg1-wtkg5;
 array heighta {5} htm1-htm5;
 array bmia    {5} bmi1-bmi5; /*derived*/
@@ -267,12 +266,12 @@ do i=1 to dim(bmia);
 end;
 
 
-*Initial values*;
+* initial values ;
 array sizesa {*} petite small medium large extra_large (2, 4, 6, 8, 10); 
 array citiesa {*} $ ('New York' 'Los Angeles' 'Dallas' 'Chicago'); 
 
 
-* Defining your own subscript range*;
+* defining your own subscript range ;
 array tempa {6:18} temp6 – temp18;
 ```
 
@@ -299,7 +298,7 @@ quit; run;
 
 
 
-* select distinct values into a macro variable then iterate/loop over it;
+* select distinct values into a macro variable then iterate/loop over it ;
 proc sql noprint;
     select distinct(stage) into :stages separated by " "
     from alldat;
@@ -312,7 +311,7 @@ quit;
     data alldat2;
        set alldat;
        if stage=&val.;
-       *put the label of a variable in a macro variable*;
+       * put the label of a variable in a macro variable ;
        call symput("fmtval", vvalue(stage)); 
     run;
 
@@ -405,7 +404,6 @@ proc loess data=breast_stage plots=none;
     output out=breast_stage_pred;
 run;
 ```
-Data set needs to be sorted by `by` variables first.
 
 ## Misc
 
@@ -455,8 +453,7 @@ See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
 </details>
 
 
-
-## Macros that I have written
+## Macros 
 
 
 ### %plot_series_scatter_by()
@@ -486,6 +483,13 @@ Print variable names, number of observations and the first 20 observations (of t
 %print_library_info("/path/to/folder");
 ```
 
+### %verify_tables()
+
+Verify a table exists and has the expected columns.
+
+```SAS
+%verify_tables(customer, id firstname lastname state zipcode);
+```
 
 ## Traps and Pitfalls
 
