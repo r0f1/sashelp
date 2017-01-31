@@ -39,23 +39,18 @@ run;
 
 ### Investigating Interesting Observations
 ```SAS
+* print all observations satisfying certain criteria ;
+proc print data=alldat;
+    where bmi > 25;
+    var name gender smoking;
+run;
+
 * print the first 20 observations ;
 proc print data=alldat(obs=20);
 run;
 
 * print the observations 50 through 70 ;
 proc print data=alldat(firstobs=50 obs=70);
-run;
-
-* print a specific observation ;
-proc print data=alldat;
-    where id=1234; 
-run;
-
-* print all observations satisfying certain criteria ;
-proc print data=alldat;
-    where bmi > 25;
-    var name gender smoking;
 run;
 
 * print a random subset of the data ;
@@ -247,32 +242,32 @@ run;
 Arrays in the SAS language are different from arrays in many other languages. A SAS array is simply a convenient way of temporarily identifying a group of variables. It is not a data structure, and the array name is not a variable.
 
 ```SAS
-* functions ;
-array incomea  {*} income08 income09 income10 income11 income12;
+data alldat;
+    * definition ;
+    array incomea  {*} income08 income09 income10 income11 income12;
 
-sum_income  = sum(of incomea);
-mean_income = mean(of incomea);
-min_income  = min(of incomea);
-max_income  = max(of incomea);
+    * definition + initial values ;
+    array sizesa   {*} petite small medium large extra_large (2, 4, 6, 8, 10); 
+    array citiesa  {*} $ ('New York' 'Los Angeles' 'Dallas' 'Chicago'); 
 
-
-* looping ;
-array wtkga   {5} wtkg1-wtkg5;
-array heighta {5} htm1-htm5;
-array bmia    {5} bmi1-bmi5; /*derived*/
-
-do i=1 to dim(bmia);
-    bmia(i)=wtkga(i)/(heighta(i)**2);
-end;
+    * definition with custom subscript range ;
+    array tempa {6:18} temp6 – temp18;
 
 
-* initial values ;
-array sizesa {*} petite small medium large extra_large (2, 4, 6, 8, 10); 
-array citiesa {*} $ ('New York' 'Los Angeles' 'Dallas' 'Chicago'); 
+    * function application ;
+    sum_income  = sum(of incomea);
+    mean_income = mean(of incomea);
 
 
-* defining your own subscript range ;
-array tempa {6:18} temp6 – temp18;
+    * looping ;
+    array wtkga   {5} wtkg1-wtkg5;
+    array heighta {5} htm1-htm5;
+    array bmia    {5} bmi1-bmi5; /*derived*/
+
+    do i=1 to dim(bmia);
+        bmia(i)=wtkga(i)/(heighta(i)**2);
+    end;
+run;
 ```
 
 <details>
@@ -289,6 +284,17 @@ array tempa {6:18} temp6 – temp18;
 
 
 ```SAS
+* create a new dataset, left joining ;
+proc sql noprint;
+    create table alldat as
+        select * 
+        from rate_by_agegroup e left join population_by_agegroup a 
+            on e.gender=a.gender and e.year=a.year and e.ag=a.ag;
+quit; run;
+
+
+
+
 * select minimum, maximum into a macro variable ;
 proc sql noprint;
     select min(rate), max(rate) into :min_y, :max_y 
@@ -331,17 +337,6 @@ quit; run;
 proc print data=printme; 
     var &varlist;
 run;
-
-
-
-
-* create a new dataset, left joining ;
-proc sql noprint;
-    create table alldat as
-        select * 
-        from rate_by_agegroup e left join population_by_agegroup a 
-            on e.gender=a.gender and e.year=a.year and e.ag=a.ag;
-quit; run;
 
 
 
