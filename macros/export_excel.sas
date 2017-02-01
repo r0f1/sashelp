@@ -1,5 +1,6 @@
 
-%macro export_excel(dataset, keep=, where=, drop=, folder=, filename=, retain_formats=T);
+%macro export_excel(dataset, keep=, where=, drop=, folder=, filename=, retain_labels=T,
+	retain_formats=T);
 
     %local excelpath formatcodes;
     %let excelpath = %sysfunc(catx(/,%sysfunc(dequote(&folder.)),%sysfunc(dequote(&filename.))));
@@ -41,7 +42,12 @@
 
  	%end;
 
-    proc export data=_tmp_reduced outfile="&excelpath." dbms=xlsx replace;
+    proc export
+    	data=_tmp_reduced 
+    	outfile="&excelpath."
+    	%if &retain_labels=T %then %do; label %end;
+    	dbms=xlsx 
+    	replace;
     run;
 
     proc datasets nolist; delete _tmp_:; quit; run;
