@@ -129,7 +129,7 @@ run;
   
 **after**
 
-|agegrp|gender|_name_|period_1|period_2|period_3|period_4|
+|agegrp|gender|\_name\_|period_1|period_2|period_3|period_4|
 |---|---|---|---|---|---|---|
 |1|1|population|1|2|3|4|
 |2|1|population|5|6|7|8|
