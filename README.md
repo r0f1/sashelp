@@ -95,36 +95,46 @@ run;
 ### Transposing
 
 ```SAS
-proc sort data=population;
-    by year gender postal_code;
+proc sort data=pop; by agegrp gender; run;
+
+proc transpose data=pop out=lexis_pop prefix=period_;
+    var population;
+    by agegrp gender;
 run;
 
-proc transpose data=population out=population_t;
-    by year gender postal_code;
-run;
 ```
 <details>
 <summary>Tables before and after transposing (click to expand)</summary>
-  
+
 **before**
 
-|gender|postal_code|year|ag1|ag2|ag3|ag4|
-|---|---|---|---|---|---|---|
-|1|1234|2017|35|47|99|17|
-|2|1234|2017|34|42|102|20|
-
+|agegrp|gender|period|population|
+|---|---|---|---|
+|1|1|2000|1|
+|1|1|2001|2|
+|1|1|2002|3|
+|1|1|2003|4|
+|1|2|2000|5|
+|1|2|2001|6|
+|1|2|2002|7|
+|1|2|2003|8|
+|2|1|2000|9|
+|2|1|2001|10|
+|2|1|2002|11|
+|2|1|2003|12|
+|2|2|2000|13|
+|2|2|2001|14|
+|2|2|2002|15|
+|2|2|2003|16|
+  
 **after**
 
-|gender|postal_code|year|ag|count|
-|---|---|---|---|---|
-|1|1234|2017|ag1|35|
-|1|1234|2017|ag2|47|
-|1|1234|2017|ag3|99|
-|1|1234|2017|ag4|17|
-|2|1234|2017|ag1|34|
-|2|1234|2017|ag2|42|
-|2|1234|2017|ag3|102|
-|2|1234|2017|ag4|20|
+|agegrp|gender|_name_|period_1|period_2|period_3|period_4|
+|---|---|---|---|---|---|---|
+|1|1|population|1|2|3|4|
+|2|1|population|5|6|7|8|
+|1|1|population|9|10|11|12|
+|2|1|population|13|14|15|16|
 </details>
 
 
