@@ -173,16 +173,11 @@ proc datasets nolist;
 run;
 
 * delete libnames, filenames ;
-libname oldlib clear;
+libname mylib clear;
 
-* delete datasets by enumeration ;
-proc datasets nolist;
-    delete olddata1 olddata2;
-quit; run;
-
-* delete datasets by common prefix (here _tmp_) ;
-proc datasets nolist;
-    delete _tmp_: ;
+* delete datasets by enumeration or by common prefix (here _tmp_) ;
+proc datasets nolist nowarn nodetails;
+    delete olddata1 olddata2  _tmp_: ;
 quit; run;
 
 * delete entire library ;
