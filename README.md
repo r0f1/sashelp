@@ -133,8 +133,8 @@ run;
 |---|---|---|---|---|---|---|
 |1|1|population|1|2|3|4|
 |2|1|population|5|6|7|8|
-|1|1|population|9|10|11|12|
-|2|1|population|13|14|15|16|
+|1|2|population|9|10|11|12|
+|2|2|population|13|14|15|16|
 </details>
 
 
