@@ -381,8 +381,9 @@ See [print_library_info.sas](https://github.com/r0f1/sashelp/blob/master/macros/
 ```SAS
 title &title.;
 title2 &title2.;
+
 ods listing style=statistical gpath=&folder.; 
-ods graphics on / reset=all imagename=&filename. height=&height. border=off;
+ods graphics on / reset=all border=off imagename=&filename. height=&height.;
 
 proc sgplot data=alldat; 
 ...;
@@ -392,6 +393,9 @@ ods _all_ close;
 title "";
 title2 "";
 ```
+
+`style=journal` for black-and-white graphics.
+
 
 ### proc loess
 
