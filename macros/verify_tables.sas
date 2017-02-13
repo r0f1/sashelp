@@ -4,19 +4,16 @@
  * The second parameter is a space separated list of columns.
  * All the tables are expected to have the same columns.
  *
- * Example call: %verify_tables(cdw.customer, customerid hhid firstname lastname state zipcode);
+ * Example call: %verify_tables(alldat alldat2, firstname lastname state zipcode);
  *
- * You may have code that assumes a table exists and has certain columns. If it does not
- * you may get strange errors that are hard to interpret. This macro will give you better
- * messages if you run it before your other code.
  */
 
 %macro verify_tables(tableList, expectedColumns);
 
 	%let i = 1;
-	%let table = %scan(&tableList, &i, %str());
+	%do %while(%scan(&tableList, &i) ne %str());
+		%let table = %scan(&tableList, &i);
 
-	%do %while(%length(&table) > 0);
 		%if %sysfunc(exist(&table))	%then %do;
 
 			%let dsid=%sysfunc(open(&table,i));
@@ -37,16 +34,15 @@
 
 					%let problem = N;
 					%let c = 1;
-					%let column = %scan(&expectedColumns, &c, %str());
-
-					%do %while(%length(&column)>0);
+										
+					%do %while(%scan(&expectedColumns, &c) ne %str());
+						%let column = %scan(&expectedColumns, &c);
 						%let varnum = %sysfunc(varnum(&dsid,&column));
 						%if &varnum <= 0 %then %do;
 							%put ERROR: Expected column &column in &table but it was not found.;
 							%let problem = Y;
 						%end;
 						%let c = %eval(&c+1);
-						%let column = %scan(&expectedColumns, &c, %str());
 					%end;
 					%if &problem = N %then 
 						%put NOTE: &table exists, has the expected variables and &nrows rows.;
@@ -57,7 +53,7 @@
 			%put ERROR: &table does not exist.;
 
 		%let i = %eval(&i+1);
-		%let table = %scan(&tableList, &i, %str());
+		
 	%end;
 
 	%put NOTE: Done verifying tables.;
