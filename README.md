@@ -488,49 +488,6 @@ run;
 </details>
 
 
-
-
-## Macros 
-
-### %plot_series_scatter_by()
-
-Scatter + series plot in one figure.
-
-```SAS
-%plot_series_scatter_by(alldat, 
-    scatter_x=year, scatter_y=orig, series_x=year, series_y=predicted,
-    group=group, log=0, label_x="Year", label_y="Rate",
-    title="My title", title2="My subtitle", folder="/path/to/folder", filename="image", height=900px);
-```
-
-### %export_excel()
-
-Export SAS data set as Excel spreadsheet, while (optionally) retaining the assigned format names.
-
-```SAS
-%export_excel(alldat, keep=year rate, folder="/path/to/folder", filename="rates.xlsx", retain_formats=T);
-```
-
-### %print_library_info()
-
-Print variable names, number of observations and the first 20 observations (of the first 10 variables) of each data set in a specified folder.
-
-```SAS
-%print_library_info("/path/to/folder");
-```
-
-### %verify_tables()
-
-Verify a table exists and has the expected columns.
-
-```SAS
-%verify_tables(customer, id firstname lastname state zipcode);
-```
-
-
-
-
-
 ## Traps and Pitfalls
 
 ### Always initialize variables
