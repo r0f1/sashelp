@@ -2,7 +2,7 @@
 
 ## Investigating
 
-### Investigating N, Distribution, Missing Values
+### Investigating N, Distribution
 
 ```SAS
 * print all names of available variables ;
@@ -20,22 +20,13 @@ proc means data=alldat nolabels missing n nmiss mean median min max p1 p5 q1 q3 
     var bmi n_cigarettes alc_grams;
     class period exposure;
 run;
-```
 
-### Cross-Tabulating
-```SAS
+* cross-tabulating ;
 proc freq data=alldat noprint;
     tables (age height bmi)*year / missing out=result;
 run;
 ```
 
-### Missingness Patterns
-```SAS
-proc mi data=alldat nimpute=0;
-    var age height bmi;
-    ods select misspattern;
-run;
-```
 
 ### Investigating Interesting Observations
 ```SAS
@@ -65,9 +56,9 @@ proc printto print='path/to/my/file.sasoutput' new; run;
 proc printto run;
 ```
 
-## Deriving New Datasets
+## Working With Datasets
 
-### Filtering and Splitting of Datasets
+### Filtering, Splitting and Merging of Datasets
 
 ```SAS
 data male;
@@ -90,53 +81,18 @@ data noinfo light medium heavy;
     else if weight <= 110 then output medium;
     else                       output heavy;
 run;
-```
 
-### Transposing
-
-```SAS
-proc sort data=pop; by agegrp gender; run;
-
-proc transpose data=pop out=lexis_pop prefix=period_;
-    var population;
-    by agegrp gender;
+* appending, concatenating ;
+data alldat;
+	set mort90 mort91 mort92 mort93;
 run;
 
+* merging ;
+data alldat;
+	merge inci90 mort90;
+	by year agegrp gender;
+run;
 ```
-<details>
-<summary>Tables before and after transposing (click to expand)</summary>
-
-**before**
-
-|agegrp|gender|period|population|
-|---|---|---|---|
-|1|1|2000|1|
-|1|1|2001|2|
-|1|1|2002|3|
-|1|1|2003|4|
-|1|2|2000|5|
-|1|2|2001|6|
-|1|2|2002|7|
-|1|2|2003|8|
-|2|1|2000|9|
-|2|1|2001|10|
-|2|1|2002|11|
-|2|1|2003|12|
-|2|2|2000|13|
-|2|2|2001|14|
-|2|2|2002|15|
-|2|2|2003|16|
-  
-**after**
-
-|agegrp|gender|\_name\_|period_1|period_2|period_3|period_4|
-|---|---|---|---|---|---|---|
-|1|1|population|1|2|3|4|
-|2|1|population|5|6|7|8|
-|1|2|population|9|10|11|12|
-|2|2|population|13|14|15|16|
-</details>
-
 
 ### Reading/Writing Datasets
 
@@ -171,7 +127,7 @@ run;
 ```
 
 
-### Deleting
+### Deleting Datasets
 
 ```SAS
 * delete all labels and formats from a dataset ;
@@ -183,7 +139,8 @@ proc datasets nolist;
 run;
 
 * delete libnames, filenames ;
-libname mylib clear;
+libname  mylib  clear;
+filename myfile clear;
 
 * delete datasets by enumeration or by common prefix (here _tmp_) ;
 proc datasets nolist nowarn nodetails;
@@ -240,9 +197,255 @@ proc rank data=alldat out=alldat groups=4;
 run;
 ```
 
-## Further Data Processing Techniques
 
-### Arrays: Creation and Iterating 
+
+
+## Proc SQL
+
+Deriving new datasets
+
+```SAS
+* summing/grouping over all age groups ;
+proc sql noprint;
+	create table autpop as 
+		select year, gender, sum(population) as population
+		from austrian_population 
+		group by year, gender
+		order by year, gender;
+quit; run;
+
+
+
+* left joining ;
+proc sql noprint;
+    create table alldat as
+        select * 
+        from rate_by_agegroup e left join population_by_agegroup a 
+            on e.gender=a.gender and e.year=a.year and e.ag=a.ag;
+quit; run;
+
+```
+
+Deriving macro variables
+
+```SAS
+
+* select minimum, maximum into a macro variable ;
+proc sql noprint;
+    select min(rate), max(rate) into :min_y, :max_y 
+    from alldat; 
+quit; run;
+
+* select distinct values into a macro variable ;
+proc sql noprint;
+    select distinct(stage) into :stages separated by " "
+    from alldat;
+quit;
+
+* select number of different values into a macro variable ;
+proc sql noprint;
+	select count(distinct(group)) into :n
+	from alldat;
+quit; run;
+
+
+
+* select variables of a dataset into a macro variable in alphabetical order then print the dataset ;
+proc sql noprint;                               
+    select distinct name into :varlist separated by ','              
+    from dictionary.columns                      
+    where libname='WORK' and memname='ALLDAT'
+    order by name;
+quit; run;
+proc sql noprint;                               
+    create table printme as select &varlist from alldat;
+quit; run;
+proc print data=printme; 
+    var &varlist;
+run;
+
+```
+
+## Macros
+
+```SAS
+* looping over values stored in macro variable separated by spaces ;
+%let c = 1;
+%do %while(%scan(&columns, &c) ne %str());
+	%let column = %scan(&columns, &c);
+
+	%put &column;
+
+	%let c = %eval(&c+1);
+%end;
+
+* changing from space-separated macro variable to comma-separated variable ;
+%let by2 = %sysfunc(tranwrd(&by.,%str( ),%str(,)));
+
+
+* useful code for macro to filter incoming dataset based on certain criteria ;
+%macro my_macro(dataset=, where=, keep=, drop=);
+
+	data _tmp_1; 
+		set &dataset;
+		%if %length(&where)>0 %then if    &where%str(;);
+		%if %length(&keep)>0  %then keep  &keep%str(;);
+		%if %length(&drop)>0  %then drop  &drop%str(;);
+	run;
+
+	proc datasets nolist; 
+		delete _tmp_:; 
+	quit; run;
+
+%mend;
+
+```
+
+## Selected SAS Procedures
+
+
+### proc mi - Missingness Patterns
+
+Investigate missing values
+
+```SAS
+proc mi data=alldat nimpute=0;
+    var age height bmi;
+    ods select misspattern;
+run;
+```
+
+### proc transpose - Transposing a Dataset
+
+```SAS
+proc sort data=pop; by agegrp gender; run;
+
+proc transpose data=pop out=lexis_pop prefix=period_;
+    var population;
+    by agegrp gender;
+run;
+
+```
+<details>
+<summary>Tables before and after transposing (click to expand)</summary>
+
+**before**
+
+|agegrp|gender|period|population|
+|---|---|---|---|
+|1|1|2000|1|
+|1|1|2001|2|
+|1|1|2002|3|
+|1|1|2003|4|
+|1|2|2000|5|
+|1|2|2001|6|
+|1|2|2002|7|
+|1|2|2003|8|
+|2|1|2000|9|
+|2|1|2001|10|
+|2|1|2002|11|
+|2|1|2003|12|
+|2|2|2000|13|
+|2|2|2001|14|
+|2|2|2002|15|
+|2|2|2003|16|
+  
+**after**
+
+|agegrp|gender|\_name\_|period_1|period_2|period_3|period_4|
+|---|---|---|---|---|---|---|
+|1|1|population|1|2|3|4|
+|2|1|population|5|6|7|8|
+|1|2|population|9|10|11|12|
+|2|2|population|13|14|15|16|
+</details>
+
+
+### proc stdrate - Age Adjusting
+
+```SAS
+ods _all_ close;
+
+proc stdrate data=alldat
+			 refdata=eustd
+			 method=direct
+			 stat=rate effect
+			 plots=none;
+		by year;
+		population group=gender event=cancer total=population;
+		reference  total=eu_population;
+		strata     agegrp / stats effect;
+		ods output strataeffect=inc_std stdrate=inc_std2;
+run;
+```
+
+### proc loess - Scatter Plot Smoothing
+
+```SAS
+proc sort data=breast_stage; by stage year; run;
+
+proc loess data=breast_stage plots=none;
+    model rate=year;
+    by stage;
+    output out=breast_stage_pred;
+run;
+```
+
+### proc reg - Linear Regression
+
+```SAS
+proc sort data=alldat; by gender yeargrp; run;
+
+ods _all_ close;
+
+proc reg data=alldat tableout outest=test_est;
+	model stdrate = year graph inter;
+	by gender yeargrp;
+run;
+```
+
+
+## Graphs and Figures
+
+### Outputting to a Specific Directory
+
+```SAS
+*creating a greyscale barcart ;
+
+proc template;
+	define style mytemplate;
+		parent=styles.journal;
+		style GraphBar from GraphComponent /
+			displayopts = "outline fillpattern";
+		style GraphData1 from GraphData1 / fillpattern = "S";
+		style GraphData2 from GraphData2 / fillpattern = "R2";
+		style GraphData3 from GraphData3 / fillpattern = "X2";
+		style GraphData4 from GraphData4 / fillpattern = "L2";
+		style GraphData5 from GraphData5 / fillpattern = "E";
+	end;
+run;
+
+*ods listing style=statistical gpath=&folder.; 
+ods listing style=mytemplate gpath=&folder.; 
+ods graphics on / reset=all imagename=&filename. height=&height.;
+
+title  &title1.;
+title2 &title2.;
+
+proc sgplot data=&dataset. pctlevel=group;
+	vbar year / group=&var. stat=percent;
+	yaxis grid label=&ylabel.;
+run;
+
+ods _all_ close;
+
+title;
+title2;
+```
+
+
+
+## Arrays: Creation and Iterating 
 
 Arrays in the SAS language are different from arrays in many other languages. A SAS array is simply a convenient way of temporarily identifying a group of variables. It is not a data structure, and the array name is not a variable.
 
@@ -285,180 +488,9 @@ run;
 </details>
 
 
-### Proc SQL
-
-
-```SAS
-* create a new dataset, left joining ;
-proc sql noprint;
-    create table alldat as
-        select * 
-        from rate_by_agegroup e left join population_by_agegroup a 
-            on e.gender=a.gender and e.year=a.year and e.ag=a.ag;
-quit; run;
-
-
-
-
-* select minimum, maximum into a macro variable ;
-proc sql noprint;
-    select min(rate), max(rate) into :min_y, :max_y 
-    from alldat; 
-quit; run;
-
-
-
-
-* select distinct values into a macro variable then iterate/loop over it ;
-proc sql noprint;
-    select distinct(stage) into :stages separated by " "
-    from alldat;
-quit;   
-
-%let n = %sysfunc(countw(&stages));
-%do i=1 %to &n;
-    %let val = %scan(&stages,&i);
-
-    data alldat2;
-       set alldat;
-       if stage=&val.;
-       * put the label of a variable in a macro variable ;
-       call symput("fmtval", vvalue(stage)); 
-    run;
-
-
-
-
-* select variables of a dataset into a macro variable in alphabetical order then print the dataset ;
-proc sql noprint;                               
-    select distinct name into :varlist separated by ','              
-    from dictionary.columns                      
-    where libname='WORK' and memname='ALLDAT'
-    order by name;
-quit; run;
-proc sql noprint;                               
-    create table printme as select &varlist from alldat;
-quit; run;
-proc print data=printme; 
-    var &varlist;
-run;
-
-
-
-
-* taking the median of 5 year groups, starting 1990 ;
-
-* create indicator variable to distinguish groups ;
-data alldat;
-    set alldat;
-    year5 = ceil(max(0, year-1990)/5);
-run;
-
-* calculate medians of groups by gender and agegroup ;
-proc sql noprint;
-    create table alldat_f as 
-        select *, median(n) as m from alldat group by year5, gender, ag7_id;
-quit; run;
-
-* delete unnecessary groups ;
-data alldat_f;
-    set alldat_f;
-    if mod(year, 5) = 0;
-    keep year gender ag7_id m;
-run;
-
-```
-
-[%do_over()](http://www2.sas.com/proceedings/sugi31/040-31.pdf)
-See [print_library_info.sas](https://github.com/r0f1/sashelp/blob/master/macros/plot_series_scatter_by.sas) for more examples.
-
-
-
-## Graphs and Figures
-
-### Outputting to a Specifiy Directory
-
-```SAS
-title &title.;
-title2 &title2.;
-
-ods listing style=statistical gpath=&folder.; 
-ods graphics on / reset=all border=off imagename=&filename. height=&height.;
-
-proc sgplot data=alldat; 
-...;
-run;
-
-ods _all_ close;
-title "";
-title2 "";
-```
-
-`style=journal` for black-and-white graphics.
-
-
-### proc loess
-
-```SAS
-proc sort data=breast_stage; by stage year; run;
-
-proc loess data=breast_stage plots=none;
-    model rate=year;
-    by stage;
-    output out=breast_stage_pred;
-run;
-```
-
-## Misc
-
-<details>
-<summary>Grouping of variables = "GROUP BY" (click to expand)</summary>
-### Grouping of variables = "GROUP BY"
-
-```SAS
-proc summary data=alldat nway completetypes;
-    class county year gender;
-    var n;
-    output out=alldat_g(drop=_freq_ _type_) sum=;
-run;
-```
-</details>
-
-<details>
-
-<summary>Grouping of variables with zero occurences (click to expand)</summary>
-### Grouping of variables with zero occurences
-
-
-```SAS
-proc freq data=alldat;
-    tables diagnosis*year*gender*agegroup / noprint out=alldat_grouped;
-run;
-
-data alldat_grouped;
-    set alldat_grouped;
-    one=1;
-run;
-
-proc summary data=alldat_grouped nway completetypes;
-    class diagnosis year gender agegroup;
-    freq count;
-    var one;
-    output out=final_grouped(drop=_freq_ _type_) n=n;
-run;
-
-proc final_grouped; 
-    set final_grouped;
-    if n=0 then n=0.0001;
-run;
-```
-
-See also [here](http://www.ats.ucla.edu/stat/sas/faq/zero_cell_freq.htm).
-</details>
 
 
 ## Macros 
-
 
 ### %plot_series_scatter_by()
 
@@ -494,6 +526,10 @@ Verify a table exists and has the expected columns.
 ```SAS
 %verify_tables(customer, id firstname lastname state zipcode);
 ```
+
+
+
+
 
 ## Traps and Pitfalls
 
