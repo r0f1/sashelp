@@ -23,6 +23,7 @@ run;
 
 * cross-tabulating ;
 proc freq data=alldat noprint;
+    where gender=1;
     tables (age height bmi)*year / missing out=result;
 run;
 ```

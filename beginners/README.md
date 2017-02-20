@@ -1,4 +1,29 @@
+## Hello World
 
+```SAS
+data _null_;
+	put "Hello World!";
+run;
+```
+
+## Anatomy of a Datastep
+
+```SAS
+data output-dataset-1 <output-dataset-2 ...>
+
+	*OPTION 1 'set' ;
+	set input-dataset;
+
+	*OPTION 2 'merge' ;
+	merge input-dataset-1 input-dataset-2 <input-dataset-3 ...>
+	by merge-variable;
+
+	* further code *;
+	* ... *;
+
+run;
+
+```
 
 ## Programming Language
 
@@ -41,7 +66,7 @@ run;
 data _null_;
 	set alldat end=eof;
 	* output messages ;
-	put Hello World!;
+	put "Hello World!";
 	put "&my_variable.";
 	* create macro variables ;
 	if eof then
