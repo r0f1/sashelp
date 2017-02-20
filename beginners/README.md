@@ -39,7 +39,7 @@ data <output-dataset>;
 	set <input-dataset>;
 
 	*OPTION 2 'merge' merge two or more exsiting datasets into one larger dataset ;
-	merge <input-dataset-1> <input-dataset-2> <input-dataset-3 ...>
+	merge <input-dataset-1> <input-dataset-2> <input-dataset-3 ...>;
 	by merge-variable;
 
 	* further code *;
