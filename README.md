@@ -495,8 +495,8 @@ run;
 ```SAS
 data alldat;
     agecat=.; * <-- this statement is important *;
-    if      0<=age<10 then agecat=1;
-    else if    age<20 then agecat=2;
+    if       0<=age<10 then agecat=1;
+    else if 10<=age<20 then agecat=2;
 run;
 ```
 
@@ -527,7 +527,7 @@ x3=.
 
 sum(x1,x2)     yields 13   # ok
 sum(x1,x2,x3)  yields 13   # missings are not considered
-sum(of x1-x3)  yields 13   # pass a list
+sum(of x1-x3)  yields 13   # passed as a list
 sum(of x:)     yields 13   # pass variables by common prefix
 sum(x1-x2)     yields -5   # error: forgot 'of' --> subtraction
 x1+x2          yields 13   # ok
@@ -562,12 +562,12 @@ If the variables `bmi90`, `bmi91`, `bmi92` do not exist in the data sets `data90
 ```SAS
 data alldat;
 
-    * duration of medication use, months: missing is coded as 999*;
-    array durmeda          {*} durmed76 durmed78 durmed80;
+    * duration of medication use, months: missing is coded as 999 *;
+    array durmeda  {*} durmed76 durmed78 durmed80;
 
     * duration of medication use, months (derived): missing will be coded as . *;
-    * and values will be caried forward from 1980 onwards*;
-    array durmedua         {*} durmedu76 durmedu78 durmedu80 durmedu84 durmedu86 durmedu88;
+    * and values will be carried forward from 1980 onwards *;
+    array durmedua {*} durmedu76 durmedu78 durmedu80 durmedu84 durmedu86 durmedu88;
 
     do i=1 to dim(durmedua);
         if i<=3 then do;
@@ -587,4 +587,24 @@ run;
 A proc freq of `durmed` reveals that there are some missing values and some values are still 999.
 I thought I have overwritten all 999 values. How is it possible that there are still some 999 values?
 
+</details>
+
+<details><summary>Creating categories (click to expand)</summary>
+
+### Creating categories
+
+```SAS
+data alldat;
+    *oc   = 1=never taken any oral contraceptives, 2=taken oral contraceptives in the past ;
+    *docu = duration of oral contraceptive use in months ;
+
+    ocstatdur=.;
+    if      oc=1 or docu=0  then ocstatdur=1;
+    else if oc=2 then do;
+        if      0<=docu<=12 then ocstatdur=2;
+        else if    docu<=36 then ocstatdur=3;
+        else if    docu<=72 then ocstatdur=4;
+        else if    docu> 72 then ocstatdur=5;
+    end;
+```
 </details>
