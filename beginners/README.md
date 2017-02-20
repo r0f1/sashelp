@@ -5,11 +5,12 @@ data _null_;
 	put "Hello World!";
 run;
 ```
++ If you want to do a data step, but do not care for the result, use the special dataset name `_null_`.
 
 ## Anatomy of a Datastep
 
 ```SAS
-data output-dataset-1 <output-dataset-2 ...>
+data <output-dataset>;
 
 	*OPTION 1 'set' ;
 	set input-dataset;
@@ -22,8 +23,21 @@ data output-dataset-1 <output-dataset-2 ...>
 	* ... *;
 
 run;
+```
+
++ More than one output dataset can be specified.
+
+## Anatomy of a Procedure Call
+```SAS
+
+proc <name> <options>;
+	<keyword> <more-options> / <even-more-options>;
+run;
 
 ```
+
+
+
 
 ## Programming Language
 
@@ -32,15 +46,17 @@ run;
 + The number of whitespace (spaces, tabs, newlines) you use, is irrelevant to SAS and will all be reduced to exactly one whitespace. The following programs are equivalent:
 
 ```SAS
+* this is equivalent ;
 data alldat; set mydata; run;
 
+* with this ;
 DATA ALLDAT;
 
 	* a one-line comment ;
 	/*
 	multi-line comment
 	*/
-	set mydata;
+	SET mydata;
 
 RUN;
 ```
@@ -51,26 +67,13 @@ RUN;
 + If you do not declare a library, the library `work` will be used. The following code does the same thing:
 
 ```SAS
+* this is equivalent ;
 data alldat;
 	set mydata;
 run;
 
+* with this ;
 data work.alldat;
 	set work.mydata;
 run;
-```
-
-+ If you want to do a data step but throw away the result afterwards, use the special dataset name `_null_`
-
-```SAS
-data _null_;
-	set alldat end=eof;
-	* output messages ;
-	put "Hello World!";
-	put "&my_variable.";
-	* create macro variables ;
-	if eof then
-		call symput("nobs", count);
-run;
-
 ```
