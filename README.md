@@ -67,12 +67,10 @@ data male;
     if sex=1;
 run;
 
-data male;
-    set alldat(where=(sex=1));
-run;
-
-data male(where=(sex=1)) female(where=(sex=2));
+data male female;
     set alldat;
+    if sex=1 then output male;
+    if sex=2 then output female;
 run;
 
 data noinfo light medium heavy;
