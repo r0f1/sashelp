@@ -1,6 +1,4 @@
-# SAS
-
-## Investigating
+SAS code snippets
 
 ### Investigating N, Distribution
 
@@ -59,7 +57,7 @@ proc printto run;
 ```
 
 
-## Importing Datasets
+### Importing Datasets
 
 ```SAS
 * read from csv file separated by semicolons ;
@@ -79,7 +77,7 @@ run;
                 folder="/path/to/folder", filename="filename.xlsx");
 ```
 
-## Deleting
+### Deleting
 
 ```SAS
 * delete libnames, filenames ;
@@ -97,7 +95,7 @@ quit; run;
 ```
 
 
-## Proc SQL
+### Proc SQL
 
 Deriving new datasets
 
@@ -163,8 +161,6 @@ run;
 
 ```
 
-## Selected SAS Procedures
-
 
 ### proc rank - Creating Quantiles
 
@@ -173,6 +169,7 @@ proc rank data=alldat out=alldat groups=4;
     var bmi;
     ranks bmi_q;
 run;
+```
 
 
 ### proc mi - Missingness Patterns
@@ -276,7 +273,7 @@ run;
 ```
 
 
-## Find the bug
+### Find the bug
 
 <details><summary>Filling up arrays (click to expand)</summary>
 
