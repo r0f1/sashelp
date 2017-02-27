@@ -30,6 +30,7 @@ run;
 
 
 ### Investigating Interesting Observations
+
 ```SAS
 * print all observations satisfying certain criteria ;
 proc print data=alldat;
@@ -57,57 +58,10 @@ proc printto print='path/to/my/file.sasoutput' new; run;
 proc printto run;
 ```
 
-## Working With Datasets
 
-### Filtering, Splitting and Merging of Datasets
-
-```SAS
-data male;
-    set alldat;
-    if sex=1;
-run;
-
-data male female;
-    set alldat;
-    if sex=1 then output male;
-    if sex=2 then output female;
-run;
-
-data noinfo light medium heavy;
-    set alldat;
-    if      weight <= 0   then output noinfo;
-    else if weight <= 85  then output light;
-    else if weight <= 110 then output medium;
-    else                       output heavy;
-run;
-
-* appending, concatenating ;
-data alldat;
-	set mort90 mort91 mort92 mort93;
-run;
-
-* merging ;
-data alldat;
-	merge inci90 mort90;
-	by year agegrp gender;
-run;
-```
-
-### Reading/Writing Datasets
+## Importing Datasets
 
 ```SAS
-libname store '/path/to/my/folder';
-
-* read from .sas7bdat file ;
-data alldat; 
-    set store.alldat;
-run;
-
-* write to .sas7bdat file ;
-data store.alldat; 
-   set alldat; 
-run;
-
 * read from csv file separated by semicolons ;
 proc import datafile="/path/to/data.csv" out=alldat dbms=csv replace;
     getnames=yes;
@@ -125,78 +79,22 @@ run;
                 folder="/path/to/folder", filename="filename.xlsx");
 ```
 
-
-### Deleting Datasets
+## Deleting
 
 ```SAS
-* delete all labels and formats from a dataset ;
-proc datasets nolist;
-    modify alldat;
-    attrib _all_ label='';
-    attrib _all_ format=;
-    attrib _all_ informat=;
-run;
-
 * delete libnames, filenames ;
 libname  mylib  clear;
 filename myfile clear;
 
 * delete datasets by enumeration or by common prefix (here _tmp_) ;
 proc datasets nolist nowarn nodetails;
-    delete olddata1 olddata2  _tmp_: ;
+    delete olddata _tmp_: ;
 quit; run;
 
 * delete entire library ;
 proc datasets library=work kill nolist; 
 quit; run;
 ```
-
-
-## Deriving New Variables
-
-### Based on Functions and Cutoffs
-
-```SAS
-proc format; 
-    value genderf
-        1="male"
-        2="female";
-    value parityf
-        1="no children"
-        2="1-3 children"
-        3="4 or more children";
-run;
-
-data alldat;
-    set alldat;
-
-    agegrp=min(int((age-30)/5),4);
-    bmi=weight/(height**2);
-
-    parity=.;
-         if npar=0          then parity=1;
-    else if npar in (1,2,3) then parity=2;
-    else if npar > 3        then parity=3;
-
-    label  bmi="Body-Mass-Index";
-
-    format gender genderf.
-           parity parityf.;
-
-    keep   id gender agegrp bmi parity;
-run;
-```
-
-### Creating Quartiles
-
-```SAS
-proc rank data=alldat out=alldat groups=4;
-    var bmi;
-    ranks bmi_q;
-run;
-```
-
-
 
 
 ## Proc SQL
@@ -265,42 +163,16 @@ run;
 
 ```
 
-## Macros
+## Selected SAS Procedures
+
+
+### proc rank - Creating Quantiles
 
 ```SAS
-* looping over values stored in macro variable separated by spaces ;
-%let c = 1;
-%do %while(%scan(&columns, &c) ne %str());
-	%let column = %scan(&columns, &c);
-
-	%put &column;
-
-	%let c = %eval(&c+1);
-%end;
-
-* changing from space-separated macro variable to comma-separated variable ;
-%let by2 = %sysfunc(tranwrd(&by.,%str( ),%str(,)));
-
-
-* useful code for macro to filter incoming dataset based on certain criteria ;
-%macro my_macro(dataset=, where=, keep=, drop=);
-
-	data _tmp_1; 
-		set &dataset;
-		%if %length(&where)>0 %then if    &where%str(;);
-		%if %length(&keep)>0  %then keep  &keep%str(;);
-		%if %length(&drop)>0  %then drop  &drop%str(;);
-	run;
-
-	proc datasets nolist; 
-		delete _tmp_:; 
-	quit; run;
-
-%mend;
-
-```
-
-## Selected SAS Procedures
+proc rank data=alldat out=alldat groups=4;
+    var bmi;
+    ranks bmi_q;
+run;
 
 
 ### proc mi - Missingness Patterns
@@ -402,154 +274,6 @@ proc reg data=alldat tableout outest=test_est;
 	by gender yeargrp;
 run;
 ```
-
-
-## Graphs and Figures
-
-### Outputting to a Specific Directory
-
-```SAS
-*creating a greyscale barcart ;
-
-proc template;
-	define style mytemplate;
-		parent=styles.journal;
-		style GraphBar from GraphComponent /
-			displayopts = "outline fillpattern";
-		style GraphData1 from GraphData1 / fillpattern = "S";
-		style GraphData2 from GraphData2 / fillpattern = "R2";
-		style GraphData3 from GraphData3 / fillpattern = "X2";
-		style GraphData4 from GraphData4 / fillpattern = "L2";
-		style GraphData5 from GraphData5 / fillpattern = "E";
-	end;
-run;
-
-*ods listing style=statistical gpath=&folder.; 
-ods listing style=mytemplate gpath=&folder.; 
-ods graphics on / reset=all imagename=&filename. height=&height.;
-
-title  &title1.;
-title2 &title2.;
-
-proc sgplot data=&dataset. pctlevel=group;
-	vbar year / group=&var. stat=percent;
-	yaxis grid label=&ylabel.;
-run;
-
-ods _all_ close;
-
-title;
-title2;
-```
-
-
-
-## Arrays: Creation and Iterating 
-
-Arrays in the SAS language are different from arrays in many other languages. A SAS array is simply a convenient way of temporarily identifying a group of variables. It is not a data structure, and the array name is not a variable.
-
-```SAS
-data alldat;
-    * definition ;
-    array incomea  {*} income08 income09 income10 income11 income12;
-
-    * definition + initial values ;
-    array sizesa   {*} petite small medium large extra_large (2, 4, 6, 8, 10); 
-    array citiesa  {*} $ ('New York' 'Los Angeles' 'Dallas' 'Chicago'); 
-
-    * definition with custom subscript range ;
-    array tempa {6:18} temp6 – temp18;
-
-
-    * function application ;
-    sum_income  = sum(of incomea);
-    mean_income = mean(of incomea);
-
-
-    * looping ;
-    array wtkga   {5} wtkg1-wtkg5;
-    array heighta {5} htm1-htm5;
-    array bmia    {5} bmi1-bmi5; /*derived*/
-
-    do i=1 to dim(bmia);
-        bmia(i)=wtkga(i)/(heighta(i)**2);
-    end;
-run;
-```
-
-<details>
-<summary>Sources and more material (click to expand)</summary>
-+ [More Examples -> SAS Doc](http://support.sas.com/documentation/cdl/en/lestmtsref/68024/HTML/default/viewer.htm#p08do6szetrxe2n136ush727sbuo.htm)
-+ [More Array Definitions + Loops over arrays](http://support.sas.com/resources/papers/proceedings10/158-2010.pdf)
-+ [Functions on Arrays](https://support.sas.com/resources/papers/97529_Using_Arrays_in_SAS_Programming.pdf)
-+ [Two dimensional and temporary arrays](http://www.lexjansen.com/nesug/nesug05/pm/pm8.pdf)
-+ [Defining your own subscript range](http://www2.sas.com/proceedings/sugi30/242-30.pdf)
-</details>
-
-
-## Traps and Pitfalls
-
-### Always initialize variables
-
-```SAS
-data alldat;
-    agecat=.; * <-- this statement is important *;
-    if       0<=age<10 then agecat=1;
-    else if 10<=age<20 then agecat=2;
-run;
-```
-
-SAS will put *NOTE: Variable ... is uninitialized* into the log otherwise. Never ignore this note.
-
-### Missing values are less than zero
-    
-```SAS
-data alldat;
-    * BMI (.=missing/1=normal/2=overweight/3=obese);
-    if      bmi<=0  then bmicat=.;
-    else if bmi<25  then bmicat=1; 
-    else if bmi<30  then bmicat=2;
-    else                 bmicat=3;
-run;
-```
-
-[More on missing values](https://support.sas.com/documentation/cdl/en/lrcon/62955/HTML/default/viewer.htm#a000989180.htm)
-
-### Built-in functions ignore missing values
-
-For example, `sum()` and `avg()` ignore missing values. [SAS doc](http://support.sas.com/documentation/cdl/en/lrdict/64316/HTML/default/viewer.htm#a000245953.htm), [pdf](http://www.lexjansen.com/nesug/nesug06/cc/cc31.pdf)
-
-```SAS
-x1=4
-x2=9
-x3=.
-
-sum(x1,x2)     yields 13   # ok
-sum(x1,x2,x3)  yields 13   # missings are not considered
-sum(of x1-x3)  yields 13   # passed as a list
-sum(of x:)     yields 13   # pass variables by common prefix
-sum(x1-x2)     yields -5   # error: forgot 'of' --> subtraction
-x1+x2          yields 13   # ok
-x1+x2+x3       yields .    # missings are considered
-```
-
-### Array variables do not have to exist
-
-```SAS
-data alldat;
-    merge data90 data91 data92; by id;
-
-    array bmia {*} bmi90 bmi91 bmi92;
-
-    do i=1 to dim(bmia);
-        bmi=bmia(i);
-        ...
-        output;
-    end;
-run;
-```
-
-If the variables `bmi90`, `bmi91`, `bmi92` do not exist in the data sets `data90 data91 data92`, SAS will not issue a warning. SAS will create these temporary names for you and as a result, `bmi` will always be missing.
 
 
 ## Find the bug

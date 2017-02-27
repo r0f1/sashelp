@@ -77,3 +77,155 @@ data work.alldat;
 	set work.mydata;
 run;
 ```
+
+## Working With Datasets
+
+### Filtering, Splitting and Merging of Datasets
+
+```SAS
+data male;
+    set alldat;
+    if sex=1;
+run;
+
+data male female;
+    set alldat;
+    if sex=1 then output male;
+    if sex=2 then output female;
+run;
+
+data noinfo light medium heavy;
+    set alldat;
+    if      weight <= 0   then output noinfo;
+    else if weight <= 85  then output light;
+    else if weight <= 110 then output medium;
+    else                       output heavy;
+run;
+
+* appending, concatenating ;
+data alldat;
+	set mort90 mort91 mort92 mort93;
+run;
+
+* merging ;
+data alldat;
+	merge inci90 mort90;
+	by year agegrp gender;
+run;
+```
+
+### Reading/Writing Datasets
+
+```SAS
+libname store '/path/to/my/folder';
+
+* read from .sas7bdat file ;
+data alldat; 
+    set store.alldat;
+run;
+
+* write to .sas7bdat file ;
+data store.alldat; 
+   set alldat; 
+run;
+```
+
+
+## Deriving New Variables
+
+```SAS
+proc format; 
+    value genderf
+        1="male"
+        2="female";
+    value parityf
+        1="no children"
+        2="1-3 children"
+        3="4 or more children";
+run;
+
+data alldat;
+    set alldat;
+
+    agegrp=min(int((age-30)/5),4);
+    bmi=weight/(height**2);
+
+    parity=.;
+         if npar=0          then parity=1;
+    else if npar in (1,2,3) then parity=2;
+    else if npar > 3        then parity=3;
+
+    label  bmi="Body-Mass-Index";
+
+    format gender genderf.
+           parity parityf.;
+
+    keep   id gender agegrp bmi parity;
+run;
+```
+
+
+## Traps and Pitfalls
+
+### Always initialize variables
+
+```SAS
+data alldat;
+    agecat=.; * <-- this statement is important *;
+    if       0<=age<10 then agecat=1;
+    else if 10<=age<20 then agecat=2;
+run;
+```
+
+SAS will put *NOTE: Variable ... is uninitialized* into the log otherwise. Never ignore this note.
+
+### Missing values are less than zero
+    
+```SAS
+data alldat;
+    * BMI (.=missing/1=normal/2=overweight/3=obese);
+    if      bmi<=0  then bmicat=.;
+    else if bmi<25  then bmicat=1; 
+    else if bmi<30  then bmicat=2;
+    else                 bmicat=3;
+run;
+```
+
+[More on missing values](https://support.sas.com/documentation/cdl/en/lrcon/62955/HTML/default/viewer.htm#a000989180.htm)
+
+### Built-in functions ignore missing values
+
+For example, `sum()` and `avg()` ignore missing values. [SAS doc](http://support.sas.com/documentation/cdl/en/lrdict/64316/HTML/default/viewer.htm#a000245953.htm), [pdf](http://www.lexjansen.com/nesug/nesug06/cc/cc31.pdf)
+
+```SAS
+x1=4
+x2=9
+x3=.
+
+sum(x1,x2)     yields 13   # ok
+sum(x1,x2,x3)  yields 13   # missings are not considered
+sum(of x1-x3)  yields 13   # passed as a list
+sum(of x:)     yields 13   # pass variables by common prefix
+sum(x1-x2)     yields -5   # error: forgot 'of' --> subtraction
+x1+x2          yields 13   # ok
+x1+x2+x3       yields .    # missings are considered
+```
+
+### Array variables do not have to exist
+
+```SAS
+data alldat;
+    merge data90 data91 data92; by id;
+
+    array bmia {*} bmi90 bmi91 bmi92;
+
+    do i=1 to dim(bmia);
+        bmi=bmia(i);
+        ...
+        output;
+    end;
+run;
+```
+
+If the variables `bmi90`, `bmi91`, `bmi92` do not exist in the data sets `data90 data91 data92`, SAS will not issue a warning. SAS will create these temporary names for you and as a result, `bmi` will always be missing.
+
