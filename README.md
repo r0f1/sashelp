@@ -68,7 +68,7 @@ run;
 
 * read from csv file separated by other separator ;
 proc import datafile="/path/to/data.csv" out=alldat dbms=dlm replace;
-    delimiter="|"; * use delimiter=";" for semicolon separated files ;
+    delimiter="|"; /* use delimiter=";" for semicolon separated files */
     getnames=yes;
 run;
 
