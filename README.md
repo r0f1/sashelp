@@ -57,20 +57,22 @@ proc printto run;
 ```
 
 
-### Importing Datasets
+### Importing/Exporting Datasets
 
 ```SAS
-* read from csv file separated by semicolons ;
+* import ;
+* read from csv file separated by commas ;
 proc import datafile="/path/to/data.csv" out=alldat dbms=csv replace;
     getnames=yes;
 run;
 
 * read from csv file separated by other separator ;
 proc import datafile="/path/to/data.csv" out=alldat dbms=dlm replace;
-    delimiter="|";
+    delimiter="|"; * use delimiter=";" for semicolon separated files ;
     getnames=yes;
 run;
 
+* export ;
 * write to excel spreadsheet ;
 %include "export_excel.sas";
 %export_excel(alldat, keep=year gender age, where=bmi le 30,
