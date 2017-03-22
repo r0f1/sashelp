@@ -2,6 +2,9 @@
 # Macros 
 
 ```SAS
+* add medians to already existing groups in the dataset ;
+%add_medians(data=alldat, var=rate, by=year, out=zzz);
+
 * export SAS data set as Excel spreadsheet, while retaining the assigned format names ;
 %export_excel(alldat, keep=year rate, folder="/path/to/folder", 
 	filename="rates.xlsx", retain_labels=T, retain_formats=T);
