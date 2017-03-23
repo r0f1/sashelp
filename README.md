@@ -67,10 +67,13 @@ proc import datafile="/path/to/data.csv" out=alldat dbms=csv replace;
 run;
 
 * read from csv file separated by other separator ;
+options locale=de_AT dflang=locale; 
 proc import datafile="/path/to/data.csv" out=alldat dbms=dlm replace;
-    delimiter="|"; /* use delimiter=";" for semicolon separated files */
     getnames=yes;
+    delimiter="|"; /* use delimiter=";" for semicolon separated files */
+    guessingrows=max;
 run;
+options locale=en_US dflang=locale; 
 
 * export ;
 * write to excel spreadsheet ;
