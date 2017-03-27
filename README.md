@@ -4,7 +4,7 @@ SAS code snippets
 
 ```SAS
 * print all names of available variables ;
-proc contents data=alldat;
+proc contents data=alldat nodetails varnum;
 run;
 
 * print distribution ;
