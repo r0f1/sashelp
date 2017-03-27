@@ -2,7 +2,7 @@
 
 ```SAS
 data _null_;
-	put "Hello World!";
+    put "Hello World!";
 run;
 ```
 + If you want to do a data step, but do not care for the result, use the special dataset name `_null_`.
@@ -19,13 +19,11 @@ data alldat; set mydata; run;
 
 * with this ;
 DATA ALLDAT;
-
-	* a one-line comment ;
-	/*
-	multi-line comment
-	*/
-	SET mydata;
-
+    * a one-line comment ;
+    /*
+    multi-line comment
+    */
+    SET Mydata;
 RUN;
 ```
 
@@ -35,15 +33,15 @@ RUN;
 ```SAS
 data <output-dataset>;
 
-	*OPTION 1: 'set' create a new dataset based on an existing one ;
-	set <input-dataset>;
+    *OPTION 1: 'set' create a new dataset based on an existing one ;
+    set <input-dataset>;
 
-	*OPTION 2 'merge' merge two or more exsiting datasets into one larger dataset ;
-	merge <input-dataset-1> <input-dataset-2> <input-dataset-3 ...>;
-	by <merge-variable>;
+    *OPTION 2 'merge' merge two or more exsiting datasets into one larger dataset ;
+    merge <input-dataset-1> <input-dataset-2> <input-dataset-3 ...>;
+    by <merge-variable>;
 
-	* further code *;
-	* ... *;
+    * further code *;
+    * ... *;
 
 run;
 ```
