@@ -29,6 +29,9 @@
     title="My title", title2="My subtitle",
     folder="/path/to/folder", filename="image", height=720px);
 
+* get list of variable names matching a list or regular expression ;
+%parse(alldat, /\w+\d\d/);
+
 * print variable names, number of observations, etc. of each data set in a specified folder ;
 %print_library_info("/path/to/folder");
 
