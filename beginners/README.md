@@ -54,12 +54,19 @@ run;
 ```SAS
 
 proc <name> data=<dataset> <options>;
-	<keyword> <more-options> / <even-more-options>;
+    <keyword> <more-options> / <even-more-options>;
+run;
+
+* example ;
+proc print data=alldat;
+    where bmi > 25;
+    var name age gender;
 run;
 
 ```
-
 + If you do not specify a dataset, the special variable `_last_` will be used, which contains the name of the dataset that was created last.
++ Generally, SAS has some special keywords that start and end with an underscore `_`. E.g. `_all_`, `_numeric_`, `_character_` for selecting variables in a `proc print` call.
++ Many procedures support the `where` keyword, that lets you select a subset of your data, without creating an entirely new dataset.
 
 
 ## Datasteps
@@ -69,12 +76,12 @@ run;
 ```SAS
 * this is equivalent ;
 data alldat;
-	set mydata;
+    set mydata;
 run;
 
 * with this ;
 data work.alldat;
-	set work.mydata;
+    set work.mydata;
 run;
 ```
 
@@ -104,13 +111,13 @@ run;
 
 * appending, concatenating ;
 data alldat;
-	set mort90 mort91 mort92 mort93;
+    set mort90 mort91 mort92 mort93;
 run;
 
 * merging ;
 data alldat;
-	merge inci90 mort90;
-	by year agegrp gender;
+    merge inci90 mort90;
+    by year agegrp gender;
 run;
 ```
 
