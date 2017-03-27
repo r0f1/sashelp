@@ -13,7 +13,7 @@ list of variable names corresponding to the variable list. If an error occurs, t
 function returns a missing value (null character). Optionally, the function saves the
 number of variables in the list to a global variable specified by the user.
 SYNTAX:
-%Parse(dsn, varlist<,nvars>)
+%parse(dsn, varlist<,nvars>)
 dsn - a SAS data set name.
 varlist - a variable list to be parsed, in either one of the following two forms:
  (1) A conventional SAS variable list such as
