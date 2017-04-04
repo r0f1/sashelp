@@ -7,6 +7,10 @@ SAS code snippets
 proc contents data=alldat nodetails varnum;
 run;
 
+* print all names of available variables with custom macro %parse(dataset, regex) ;
+%put All available variables: %parse(alldat, /.*/); 
+
+
 * print distribution ;
 proc means data=alldat maxdec=2 nolabels missing n nmiss mean std;
     var age;
@@ -53,7 +57,7 @@ run;
 * print to a specific output file ;
 proc printto print='path/to/my/file.sasoutput' new; run;
     * call proc freq, proc means, etc.;
-proc printto run;
+proc printto; run;
 ```
 
 
