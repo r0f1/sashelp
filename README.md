@@ -82,12 +82,17 @@ options locale=en_US dflang=locale;
                 folder="/path/to/folder", filename="filename.xlsx");
 ```
 
-### Deleting
+### Renaming / Deleting
 
 ```SAS
 * delete libnames, filenames ;
 libname  mylib  clear;
 filename myfile clear;
+
+* rename a dataset ;
+proc datasets nolist;
+    change myoldname = newname;
+quit; run;
 
 * delete datasets by enumeration or by common prefix (here _tmp_) ;
 proc datasets nolist nowarn nodetails;
