@@ -7,6 +7,7 @@ Helpful code pieces for common programming tasks.
 proc datasets library=work kill nolist; 
 quit; run;
 
+
 * declare all the needed external file references *;
 * include all macros and formats, set linesize, pagesize *;
 filename scripts  '/path/to/my/scripts';
@@ -16,12 +17,11 @@ options mautosource sasautos=(scripts);
 options fmtsearch=(formats);
 options linesize=max pagesize=max nocenter replace;
 
-libname outdir '/path/to/my/desktop';
-filename tabl1 'output/table1.sasoutput';
-filename tabl2 'output/table2.sasoutput';
-
-
+libname vault '/path/to/my/filestorage';
+filename tabl1 '/path/to/my/output/table1.sasoutput';
+filename tabl2 '/path/to/my/output/table2.sasoutput';
 ```
+
 ### Macros
 
 ```SAS
