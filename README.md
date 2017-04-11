@@ -294,7 +294,21 @@ proc sort data=alldat; by gender yeargrp; run;
 ods _all_ close;
 
 proc reg data=alldat tableout outest=test_est;
-	model stdrate = year graph inter;
-	by gender yeargrp;
+    model stdrate = year graph inter;
+    by gender yeargrp;
 run;
 ```
+
+### proc genmod - Generalized Linear Models
+
+The class of generalized linear models is an extension of traditional linear models that allows the mean of a population to depend on a linear predictor through a nonlinear link function and allows the response probability distribution to be any member of an exponential family of distributions. Many widely used statistical models are generalized linear models. These include classical linear models with normal errors, logistic and probit models for binary data, and log-linear models for multinomial data.
+
+```SAS
+* reslik represents the likelihood residual for identifying poorly fitted observations;
+
+proc genmod data=alldat;
+    model score = calories;
+    output out=alldat reslik=resscore;
+run;
+```
+
