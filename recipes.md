@@ -1,6 +1,28 @@
 Helpful code pieces for common programming tasks.
 
-## Macros
+### Preamples
+
+```SAS
+* delete entire work library to get a fresh start ;
+proc datasets library=work kill nolist; 
+quit; run;
+
+* declare all the needed external file references *;
+* include all macros and formats, set linesize, pagesize *;
+filename scripts  '/path/to/my/scripts';
+libname formats '/path/to/my/formats';
+
+options mautosource sasautos=(scripts);
+options fmtsearch=(formats);
+options linesize=max pagesize=max nocenter replace;
+
+libname outdir '/path/to/my/desktop';
+filename tabl1 'output/table1.sasoutput';
+filename tabl2 'output/table2.sasoutput';
+
+
+```
+### Macros
 
 ```SAS
 * macro template: filter incoming dataset based on certain criteria ;
