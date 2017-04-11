@@ -1,6 +1,6 @@
 Helpful code pieces for common programming tasks.
 
-### Preamples
+### Preambles
 
 ```SAS
 * delete entire work library to get a fresh start ;
