@@ -30,6 +30,8 @@ Plots a series plot, based on one x axis and several y axes.
 	folder=, filename=, height=720px, greyscale=F,
 	log=1);
 
+
+
     data _tmp_1; 
     	set &dataset;
     	%if %length(&where)>0 %then if    &where%str(;);
@@ -43,13 +45,14 @@ Plots a series plot, based on one x axis and several y axes.
 
 	%if &greyscale.=T %then %do; 
 		%if &n.=1 %then %do; %let colors = GRAY00; %end;
-		%if &n.=2 %then %do; %let colors = GRAY00 GRAY30; %end;
-		%if &n.=3 %then %do; %let colors = GRAY00 GRAY30 GRAY50; %end;
-		%if &n.=4 %then %do; %let colors = GRAY00 GRAY30 GRAY50 GRAY70; %end;
-		%if &n.=5 %then %do; %let colors = GRAY00 GRAY30 GRAY50 GRAY70 GRAY90; %end;
-		%if &n.=6 %then %do; %let colors = GRAY00 GRAY30 GRAY50 GRAY70 GRAY90 GRAYB0; %end;
-		%if &n.=7 %then %do; %let colors = GRAY00 GRAY30 GRAY50 GRAY70 GRAY90 GRAYB0 GRAYD0; %end;
-		%if &n.=8 %then %do; %let colors = GRAY00 GRAY30 GRAY50 GRAY70 GRAY90 GRAYB0 GRAYD0 GRAYF0; %end;
+		%if &n.=2 %then %do; %let colors = GRAY00 GRAY20; %end;
+		%if &n.=3 %then %do; %let colors = GRAY00 GRAY20 GRAY40; %end;
+		%if &n.=4 %then %do; %let colors = GRAY00 GRAY20 GRAY40 GRAY60; %end;
+		%if &n.=5 %then %do; %let colors = GRAY00 GRAY20 GRAY40 GRAY60 GRAY80; %end;
+		%if &n.=6 %then %do; %let colors = GRAY00 GRAY20 GRAY40 GRAY60 GRAY80 GRAYA0; %end;
+		%if &n.=7 %then %do; %let colors = GRAY00 GRAY20 GRAY40 GRAY60 GRAY80 GRAYA0 GRAYC0; %end;
+		%if &n.=8 %then %do; %let colors = GRAY00 GRAY20 GRAY40 GRAY60 GRAY80 GRAYA0 GRAYC0 GRAYE0; %end;
+		%if &n.=9 %then %do; %let colors = GRAY00 GRAY20 GRAY40 GRAY60 GRAY80 GRAYA0 GRAYC0 GRAYE0 GRAYF0; %end;
 	%end;
 	%else %do;
 		%if &n.=1 %then %do; %let colors = CXE41A1C; %end;
@@ -60,6 +63,7 @@ Plots a series plot, based on one x axis and several y axes.
 		%if &n.=6 %then %do; %let colors = CXE41A1C CX377EB8 CX4DAF4A CX984EA3 CXFF7F00 CXFFFF33; %end;
 		%if &n.=7 %then %do; %let colors = CXE41A1C CX377EB8 CX4DAF4A CX984EA3 CXFF7F00 CXFFFF33 CXA65628; %end;
 		%if &n.=8 %then %do; %let colors = CXE41A1C CX377EB8 CX4DAF4A CX984EA3 CXFF7F00 CXFFFF33 CXA65628 CXF781BF; %end;
+		%if &n.=9 %then %do; %let colors = CXE41A1C CX377EB8 CX4DAF4A CX984EA3 CXFF7F00 CXFFFF33 CXA65628 CXF781BF CX999999; %end;
 	%end;
 
 	title &title.;

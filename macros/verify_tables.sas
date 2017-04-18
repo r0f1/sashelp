@@ -57,5 +57,6 @@
 	%end;
 
 	%put NOTE: Done verifying tables.;
+	%let rc= %sysfunc(close(&dsid.));
 
 %mend;

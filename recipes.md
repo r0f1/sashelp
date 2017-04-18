@@ -44,6 +44,24 @@ filename tabl2 '/path/to/my/output/table2.sasoutput';
 %mend;
 
 
+* macro template: let the user specify an optional output datset ;
+%macro my_macro(data=, out=);
+	
+	%if %length(&out)>0 %then
+		%let dsout = &out.;
+	%else 
+		%let dsout = &data.;
+
+	data &dsout;
+		set &data;
+		
+		* more code goes here ;
+		
+	run;
+
+%mend;
+
+
 
 * looping over values stored in macro variable separated by spaces ;
 %let c = 1;
