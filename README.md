@@ -187,11 +187,22 @@ proc print data=printme;
 run;
 
 ```
+### proc sort - Sort Dataset
 
+```SAS
+* out= option is optional ;
+* here: sort by lighest to heaviest ppl and oldest to youngest ppl ;
+proc sort data=alldat out=alldat_sorted;
+    by weight descending age;
+run;
+```
 
 ### proc rank - Creating Quantiles
 
+Create tertiles, quartiles, quintiles, deciles, etc.
+
 ```SAS
+* out= option is important ;
 proc rank data=alldat out=alldat groups=4;
     var bmi;
     ranks bmi_q;
@@ -215,7 +226,9 @@ run;
 ```SAS
 proc sort data=pop; by agegrp gender; run;
 
+* prefix= and id are optional, cause the columns to have names ;
 proc transpose data=pop out=lexis_pop prefix=period_;
+    id period;
     var population;
     by agegrp gender;
 run;
@@ -247,7 +260,7 @@ run;
   
 **after**
 
-|agegrp|gender|\_name\_|period_1|period_2|period_3|period_4|
+|agegrp|gender|\_name\_|period_2000|period_2001|period_2002|period_2003|
 |---|---|---|---|---|---|---|
 |1|1|population|1|2|3|4|
 |2|1|population|5|6|7|8|
