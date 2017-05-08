@@ -82,6 +82,9 @@ run;
 + Note, that the keyword `if` has two purposes. 
   + If you use `if ...` you select the observations, that you want to keep in your dataset. See `if sex=1;` in the first example.
   + If you use `if ... then ...`, you can create some new variables afther the `then` part. See `parity` variable in last example.
++ Note that also `=` has two purposes.
+  + If you use a `=` after an `if` or `where` keyword, you will do a comparison: `if npar=0 then ...`. (The `...` will be executed, if the variable `npar` is indeed zero.)
+  + If you use a `=` anywhere else, you will do an assignment: `parity=1;` (This assigns the variable parity the value 1.)
 + If you want to execute more than one statement after the `then` keyword, you have to use `do; ... end;`. Notice, that both keywords, have a `;` at the end.
 
 
