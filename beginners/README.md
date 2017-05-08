@@ -10,6 +10,8 @@ run;
 ## Programming Language
 
 + You can use upper or lowercase letters. SAS processes names as uppercase regardless of how you type them.
++ Both variable names and dataset names, can contain numbers, but the first character has to be a letter. 
+    + `mort90` is a valid variable / dataset name, while `90mort` is not valid.
 + All comments will be deleted just before the execution of the program.
 + The number of whitespace (spaces, tabs, newlines) you use, is irrelevant to SAS and will all be reduced to exactly one whitespace. The following programs are equivalent:
 
@@ -27,6 +29,80 @@ DATA ALLDAT;
 RUN;
 ```
 
+## Datasteps
+
++ If you do not declare a library, the library `work` will be used. The following code does the same thing:
+
+```SAS
+* this is equivalent ;
+data alldat;
+    set mydata;
+run;
+
+* with this ;
+data work.alldat;
+    set work.mydata;
+run;
+```
+
+## Working With Datasets
+
+### Filtering, Splitting and Merging of Datasets
+
+```SAS
+data male;
+    set alldat;
+    if sex=1;
+run;
+
+* appending, concatenating ;
+data alldat;
+    set mort90 mort91 mort92 mort93;
+run;
+
+* merging ;
+data alldat;
+    merge inci90 mort90; * the datasets to be merged ;
+    by year agegrp gender; * the columns that should be used for merging ;
+run;
+
+data alldat;
+    set alldat;
+
+    agegrp=min(int((age-30)/5),4);
+    bmi=weight/(height**2);
+
+    parity=.;
+         if npar=0          then parity=1;
+    else if npar in (1,2,3) then parity=2;
+    else if npar > 3        then parity=3;
+run;
+```
+
++ Note, that the keyword `if` has two purposes. 
+  + If you use `if ...` you select the observations, that you want to keep in your dataset. See `if sex=1;` in the first example.
+  + If you use `if ... then ...`, you can create some new variables afther the `then` part. See `parity` variable in last example.
++ If you want to execute more than one statement after the `then` keyword, you have to use `do; ... end;`. Notice, that both keywords, have a `;` at the end.
+
+
+### Another way to split datasets
+
+
+```SAS
+data male female;
+    set alldat;
+    if sex=1 then output male;
+    if sex=2 then output female;
+run;
+
+data noinfo light medium heavy;
+    set alldat;
+    if      weight <= 0   then output noinfo;
+    else if weight <= 85  then output light;
+    else if weight <= 110 then output medium;
+    else                       output heavy;
+run;
+```
 
 ## Anatomy of a Datastep
 
@@ -67,57 +143,6 @@ run;
 + Many procedures support the `where` keyword, that lets you select a subset of your data, without creating an entirely new dataset.
 
 
-## Datasteps
-
-+ If you do not declare a library, the library `work` will be used. The following code does the same thing:
-
-```SAS
-* this is equivalent ;
-data alldat;
-    set mydata;
-run;
-
-* with this ;
-data work.alldat;
-    set work.mydata;
-run;
-```
-
-## Working With Datasets
-
-### Filtering, Splitting and Merging of Datasets
-
-```SAS
-data male;
-    set alldat;
-    if sex=1;
-run;
-
-data male female;
-    set alldat;
-    if sex=1 then output male;
-    if sex=2 then output female;
-run;
-
-data noinfo light medium heavy;
-    set alldat;
-    if      weight <= 0   then output noinfo;
-    else if weight <= 85  then output light;
-    else if weight <= 110 then output medium;
-    else                       output heavy;
-run;
-
-* appending, concatenating ;
-data alldat;
-    set mort90 mort91 mort92 mort93;
-run;
-
-* merging ;
-data alldat;
-    merge inci90 mort90;
-    by year agegrp gender;
-run;
-```
 
 ### Reading/Writing Datasets
 
