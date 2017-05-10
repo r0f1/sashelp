@@ -74,7 +74,7 @@ run;
 options locale=de_AT dflang=locale; 
 proc import datafile="/path/to/data.csv" out=alldat dbms=dlm replace;
     getnames=yes;
-    delimiter="|"; /* use delimiter=";" for semicolon separated files */
+    delimiter=";"; /* use delimiter="|" for pipe separated files */
     guessingrows=max;
 run;
 options locale=en_US dflang=locale; 
@@ -119,6 +119,26 @@ data testdata;
         z=y+4;
         output;
     end;
+run;
+```
+
+### Graphs and Figures
+
+```SAS
+* preamble ;
+ods listing style=statistical gpath="/path/to/my/folder"; 
+ods graphics on / reset=all imagename="my_filename" height=720px;
+
+* proc sgplot, univariate, etc. ;
+
+ods _all_ close;
+
+
+
+* histogram, cumulative density function ;
+proc univariate data=alldat;
+	histogram height / normal; * normal causes a normal distribution to be plotted ;
+	cdfplot height / normal noecdf; * noecdf leaves only the normal density function ;
 run;
 ```
 
