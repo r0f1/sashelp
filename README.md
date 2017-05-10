@@ -134,11 +134,13 @@ ods graphics on / reset=all imagename="my_filename" height=720px;
 ods _all_ close;
 
 
-
-* histogram, cumulative density function ;
+* histogram ;
 proc univariate data=alldat;
-	histogram height / normal; * normal causes a normal distribution to be plotted ;
-	cdfplot height / normal noecdf; * noecdf leaves only the normal density function ;
+    histogram height / normal; * normal causes a normal distribution to be plotted ;
+run;
+* cumulative density function ;
+proc univariate data=alldat;
+    cdfplot height / normal noecdf; * noecdf leaves only the normal density function ;
 run;
 ```
 
