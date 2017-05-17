@@ -217,6 +217,13 @@ run;
 proc sort data=alldat out=alldat_sorted;
     by weight descending age;
 run;
+
+* keep only the first id, that is in the physical file ;
+proc sort data=alldat nodupkey;
+    by id;
+run;
+
+* use nodup, if you only want to throw out exact tuple duplicates instead ;
 ```
 
 ### proc rank - Creating Quantiles
