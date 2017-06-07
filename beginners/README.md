@@ -213,7 +213,9 @@ run;
 SAS will put *NOTE: Variable ... is uninitialized* into the log otherwise. Never ignore this note.
 
 ### Missing values are less than zero
-    
+
+Missing values are less than zero if you compare them using arithmetic operators.
+
 ```SAS
 data alldat;
     * BMI (.=missing/1=normal/2=overweight/3=obese);
@@ -222,6 +224,14 @@ data alldat;
     else if bmi<30  then bmicat=2;
     else                 bmicat=3;
 run;
+```
+
+However, the built-in function `min()` treats missing values as you would expect.
+
+```SAS
+min(1,2,3) -> 1
+min(.,2,3) -> 2
+min(.,.,.) -> .
 ```
 
 [More on missing values](https://support.sas.com/documentation/cdl/en/lrcon/62955/HTML/default/viewer.htm#a000989180.htm)
