@@ -142,6 +142,11 @@ run;
 proc univariate data=alldat;
     cdfplot height / normal noecdf; * noecdf leaves only the normal density function ;
 run;
+* barchart (grouped) where you want to hide a fake observation that has obsweight=0 ;
+proc sgplot data=&dataset. pctlevel=group;
+    vbar year / group=subtype stat=percent legendlabel="" name="a" legendlabel="" weight=obsweight;
+    keylegend "a";
+run;
 ```
 
 ### Proc SQL
