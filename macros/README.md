@@ -35,6 +35,9 @@
 * print variable names, number of observations, etc. of each data set in a specified folder ;
 %print_library_info("/path/to/folder");
 
+* check if a variables exists in a dataset ;
+%if %varexist(alldat,NAME) %then ... %else ...
+
 * verify one or more tables exist and contain the expected columns ;
 %verify_tables(alldat, id firstname lastname state zipcode);
 ```
