@@ -30,10 +30,11 @@ proc freq data=alldat noprint;
 run;
 
 * sum over a column;
-proc print data=alldat noobs;
-    sum nbirth;
-    by exposure;
+proc summary data=alldat;
+    var nbirths;
+    output out=births sum=;
 run;
+proc print data=births noobs; run; 
 ```
 
 
