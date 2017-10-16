@@ -28,6 +28,12 @@ proc freq data=alldat noprint;
     where gender=1;
     tables (age height bmi)*year / missing out=result;
 run;
+
+* sum over a column;
+proc print data=alldat;
+    sum nbirth;
+    by exposure;
+run;
 ```
 
 
