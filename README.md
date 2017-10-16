@@ -30,7 +30,7 @@ proc freq data=alldat noprint;
 run;
 
 * sum over a column;
-proc print data=alldat;
+proc print data=alldat noobs;
     sum nbirth;
     by exposure;
 run;
