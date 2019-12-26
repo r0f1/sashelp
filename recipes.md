@@ -73,6 +73,3 @@ filename tabl2 '/path/to/my/output/table2.sasoutput';
 	%let c = %eval(&c+1);
 %end;
 ```
-
-
-
