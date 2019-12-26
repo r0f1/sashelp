@@ -1,5 +1,3 @@
-SAS code snippets
-
 ### Investigating N, Distribution
 
 ```SAS
